@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d051beb915b4a9d449de65a90072acf2, type: 3}
+  m_Name: Enemy_Cube
+  m_EditorClassIdentifier: 
+  enemyName: Cube
+  maxHealth: 10
+  moveSpeed: 1
+  damageToBase: 1
+  currencyValue: 10
+  prefab: {fileID: 1585812150323648226, guid: d12221f127f6e494099c78ee848b4380, type: 3}
+  canFly: 0
+  isArmored: 0
+  canRegenerate: 0
+  regenerationRate: 0

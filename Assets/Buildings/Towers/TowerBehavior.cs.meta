@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f4eb167d52a7a30478e05df0d992d423
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - towerData: {instanceID: 0}
+  - turretRotationPart: {instanceID: 0}
+  - firePoint: {instanceID: 0}
+  - projectilePrefab: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

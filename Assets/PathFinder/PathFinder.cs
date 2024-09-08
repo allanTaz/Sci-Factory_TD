@@ -25,7 +25,7 @@ public class Pathfinder : MonoBehaviour
         pathLine.material = pathLineMaterial;
 
         gridOffset = gridGenerator.transform.position;
-        Debug.Log($"Grid offset: {gridOffset}");
+        //Debug.Log($"Grid offset: {gridOffset}");
 
         StartCoroutine(FindPathWhenReady());
     }
@@ -43,13 +43,13 @@ public class Pathfinder : MonoBehaviour
 
     IEnumerator FindPathWhenReady()
     {
-        Debug.Log("Waiting for grid to initialize...");
+        //Debug.Log("Waiting for grid to initialize...");
         yield return new WaitForSeconds(0.5f);
-        Debug.Log("Finding start and end objects...");
+       //Debug.Log("Finding start and end objects...");
         FindStartAndEndObjects();
         if (startObject != null && endObject != null)
         {
-            Debug.Log("Start and end objects found. Finding path...");
+            //Debug.Log("Start and end objects found. Finding path...");
             FindPath();
             pathLine.material.SetVector("_Tiling", new Vector2(17, 1));
         }
@@ -79,7 +79,7 @@ public class Pathfinder : MonoBehaviour
         Vector2Int startPos = GetGridPosition(startObject);
         Vector2Int endPos = GetGridPosition(endObject);
 
-        Debug.Log($"Finding path from {startPos} to {endPos}");
+        //Debug.Log($"Finding path from {startPos} to {endPos}");
         path = AStar(startPos, endPos);
         DisplayPath();
     }
@@ -190,7 +190,7 @@ public class Pathfinder : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Displaying path with {path.Count} points");
+        //Debug.Log($"Displaying path with {path.Count} points");
         pathLine.positionCount = path.Count;
         for (int i = 0; i < path.Count; i++)
         {

@@ -27,7 +27,7 @@ public class GridCell
 
     public void RemoveObject()
     {
-        if (IsOccupied && !IsOre)
+        if (IsOccupied)
         {
             PlacedObject = null;
             IsOccupied = false;

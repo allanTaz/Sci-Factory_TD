@@ -14,7 +14,8 @@ public class GridGenerator : MonoBehaviour
     private GameObject enemySpawner;
     private GridCell[,] grid;
     private GameObject[,] visualCells;
-
+    public int gridWidth { get { return width; } set { width = value; } }
+    public int gridHeight { get { return height; } set { height = value; } }
     private void Awake()
     {
         GenerateGrid();
@@ -50,7 +51,7 @@ public class GridGenerator : MonoBehaviour
             }
         }
 
-        Debug.Log($"Grid generated with dimensions {width}x{height}");
+        //Debug.Log($"Grid generated with dimensions {width}x{height}");
     }
 
     public Vector3 GetWorldPosition(Vector2Int gridPosition)
@@ -89,11 +90,17 @@ public class GridGenerator : MonoBehaviour
                 }
             }
         }
-
+        GameObject placedObj = null;
         // If all cells are available, place the object
         Vector3 worldPosition = GetWorldPosition(position);
-        GameObject placedObj = Instantiate(obj, worldPosition, Quaternion.identity);
-
+        if (objTransform != null)
+        {
+            placedObj = Instantiate(obj, worldPosition, objTransform.rotation);
+        }
+        else
+        {
+            placedObj = Instantiate(obj, worldPosition, Quaternion.identity);
+        }
         float objectHeight = CalculateObjectHeight(placedObj);
 
         if (objTransform == null)

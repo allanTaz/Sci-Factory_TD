@@ -51,6 +51,10 @@ public class BuildingPlacer : MonoBehaviour
                 CancelPlacement();
             }
         }
+        else if (Input.GetMouseButtonDown(1)) // Right mouse button
+        {
+            DestroyBuildingAtMousePosition();
+        }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
         {
@@ -103,7 +107,7 @@ public class BuildingPlacer : MonoBehaviour
             Destroy(previewBuilding);
         }
 
-        previewBuilding = Instantiate(selectedBuilding);
+        previewBuilding = Instantiate(selectedBuilding, Vector3.down * 4, selectedBuilding.transform.rotation);
         if (!continuousPlacement || lastSelectedBuildingIndex != index)
         {
             currentRotation = 0f;
@@ -161,7 +165,7 @@ public class BuildingPlacer : MonoBehaviour
             Vector3 snappedPosition = gridGenerator.GetWorldPosition(finalGridPosition);
 
             // Position the preview building at the center of its occupied tiles
-            previewBuilding.transform.position = snappedPosition + Vector3.up*(previewBuilding.transform.localScale.y/2f + 0.5f);
+            previewBuilding.transform.position = snappedPosition + Vector3.up * (previewBuilding.transform.localScale.y / 2f + 0.5f);
 
             bool canPlace = CanPlaceBuilding(finalGridPosition);
             SetPreviewTransparency(0.5f, canPlace ? Color.green : Color.red);
@@ -383,5 +387,52 @@ public class BuildingPlacer : MonoBehaviour
     public Building GetSelectedBuildingData()
     {
         return selectedBuildingProps;
+    }
+
+    private void DestroyBuildingAtMousePosition()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, gridLayer))
+        {
+            Vector2Int gridPosition = GetFinalGridPosition(hit);
+            DestroyBuilding(gridPosition);
+        }
+    }
+    private void DestroyBuilding(Vector2Int position)
+    {
+        GridCell cell = gridGenerator.GetCell(position.x, position.y);
+        if (cell != null && cell.IsOccupied)
+        {
+            GameObject buildingToDestroy = cell.PlacedObject;
+
+            // Find all cells occupied by this building
+            List<Vector2Int> occupiedPositions = new List<Vector2Int>();
+            for (int x = 0; x < gridGenerator.gridWidth; x++)
+            {
+                for (int y = 0; y < gridGenerator.gridHeight; y++)
+                {
+                    GridCell checkCell = gridGenerator.GetCell(x, y);
+                    if (checkCell != null && checkCell.PlacedObject == buildingToDestroy)
+                    {
+                        occupiedPositions.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+
+            // Clear all occupied cells
+            foreach (Vector2Int pos in occupiedPositions)
+            {
+                GridCell occupiedCell = gridGenerator.GetCell(pos.x, pos.y);
+                occupiedCell.RemoveObject();
+            }
+
+            // Destroy the building GameObject
+            Destroy(buildingToDestroy);
+
+            // Optional: Trigger any post-destruction events or effects
+            //OnBuildingDestroyed(buildingToDestroy, position);
+        }
     }
 }

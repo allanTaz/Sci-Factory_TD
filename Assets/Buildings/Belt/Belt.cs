@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Belt : MonoBehaviour
@@ -11,7 +12,13 @@ public class Belt : MonoBehaviour
     public bool isSpaceTaken;
     private GridGenerator _gridGenerator;
     private Vector2Int _gridPosition;
+    private bool isPaused = false;
+    private Coroutine moveItemCoroutine;
 
+    private void OnDestroy()
+    {
+        Destroy(currentItem);
+    }
     private void Start()
     {
         _gridGenerator = FindObjectOfType<GridGenerator>();
@@ -22,17 +29,21 @@ public class Belt : MonoBehaviour
         }
 
         _gridPosition = GetGridPosition();
-        beltInSequence = null;
-        beltInSequence = FindNextBelt();
+        UpdateNextDestination();
         gameObject.name = $"Belt: {_beltID++}";
     }
 
     private void Update()
     {
         if (beltInSequence == null)
-            beltInSequence = FindNextBelt();
-        if (currentItem != null)
-            StartCoroutine(StartBeltMove());
+            UpdateNextDestination();
+        if (currentItem != null && !isPaused)
+        {
+            if (moveItemCoroutine == null)
+            {
+                moveItemCoroutine = StartCoroutine(StartBeltMove());
+            }
+        }
     }
 
     public Vector3 GetItemPosition()
@@ -45,35 +56,91 @@ public class Belt : MonoBehaviour
     private IEnumerator StartBeltMove()
     {
         isSpaceTaken = true;
-        if (currentItem != null && beltInSequence != null && !beltInSequence.isSpaceTaken)
+        if (currentItem != null)
         {
-            Vector3 toPosition = beltInSequence.GetItemPosition();
-            beltInSequence.isSpaceTaken = true;
-            var step = beltSpeed * Time.deltaTime;
-            while (currentItem.transform.position != toPosition)
+            Vector3 toPosition;
+            bool isMovingToCollectionBuilding = false;
+            CollectionBuilding collectionBuilding = null;
+
+            var (nextBelt, nextCollectionBuilding) = FindNextDestination();
+
+            if (nextBelt != null && !nextBelt.isSpaceTaken)
             {
-                currentItem.transform.position =
-                    Vector3.MoveTowards(currentItem.transform.position, toPosition, step);
+                toPosition = nextBelt.GetItemPosition();
+                beltInSequence = nextBelt;
+            }
+            else if (nextCollectionBuilding != null)
+            {
+                toPosition = _gridGenerator.GetWorldPosition(nextCollectionBuilding.GetInputPosition());
+                isMovingToCollectionBuilding = true;
+                collectionBuilding = nextCollectionBuilding;
+            }
+            else
+            {
+                moveItemCoroutine = null;
+                yield break;
+            }
+
+            var step = beltSpeed * Time.deltaTime;
+            while (currentItem != null && currentItem.transform.position != toPosition)
+            {
+                if (!isPaused)
+                {
+                    currentItem.transform.position =
+                        Vector3.MoveTowards(currentItem.transform.position, toPosition, step);
+                }
                 yield return null;
             }
-            isSpaceTaken = false;
-            beltInSequence.currentItem = currentItem;
-            currentItem = null;
+
+            if (currentItem == null)
+            {
+                Debug.LogWarning("Item was destroyed or removed while moving on the belt.");
+                moveItemCoroutine = null;
+                yield break;
+            }
+
+            if (isMovingToCollectionBuilding && collectionBuilding != null)
+            {
+                collectionBuilding.CollectResource(currentItem);
+                currentItem = null;
+            }
+            else if (beltInSequence != null)
+            {
+                beltInSequence.isSpaceTaken = true;
+                beltInSequence.currentItem = currentItem;
+                currentItem = null;
+            }
+            else
+            {
+                Debug.LogWarning("Destination became invalid while moving item on belt.");
+            }
         }
+        isSpaceTaken = false;
+        moveItemCoroutine = null;
     }
 
-    private Belt FindNextBelt()
+    private (Belt, CollectionBuilding) FindNextDestination()
     {
         Vector2Int direction = GetForwardDirection();
         Vector2Int nextGridPosition = _gridPosition + direction;
         GridCell nextCell = _gridGenerator.GetCell(nextGridPosition.x, nextGridPosition.y);
         if (nextCell != null && nextCell.IsOccupied)
         {
-            Belt nextBelt = nextCell.PlacedObject.GetComponent<Belt>();
+            Belt nextBelt = nextCell.PlacedObject?.GetComponent<Belt>();
             if (nextBelt != null)
-                return nextBelt;
+                return (nextBelt, null);
+
+            CollectionBuilding collectionBuilding = nextCell.PlacedObject?.GetComponent<CollectionBuilding>();
+            if (collectionBuilding != null)
+                return (null, collectionBuilding);
         }
-        return null;
+        return (null, null);
+    }
+
+    private void UpdateNextDestination()
+    {
+        var (nextBelt, _) = FindNextDestination();
+        beltInSequence = nextBelt;
     }
 
     private Vector2Int GetGridPosition()
@@ -86,31 +153,22 @@ public class Belt : MonoBehaviour
 
     private Vector2Int GetForwardDirection()
     {
-        // Get the forward vector of the belt
         Vector3 forward = transform.forward;
-
-        // Round the forward vector to get the main direction
         float angle = Vector3.SignedAngle(Vector3.forward, forward, Vector3.up);
 
         if (angle >= -45 && angle < 45)
-            return Vector2Int.up;    // Facing forward (+z)
+            return Vector2Int.up;
         else if (angle >= 45 && angle < 135)
-            return Vector2Int.right; // Facing right (+x)
+            return Vector2Int.right;
         else if (angle >= 135 || angle < -135)
-            return Vector2Int.down;  // Facing backward (-z)
+            return Vector2Int.down;
         else
-            return Vector2Int.left;  // Facing left (-x)
+            return Vector2Int.left;
     }
 
-    // Call this when a new belt is placed or removed adjacent to this belt
     public void OnRotationChanged()
     {
-        UpdateConnections();
-    }
-
-    public void UpdateConnections()
-    {
-        beltInSequence = FindNextBelt();
+        UpdateNextDestination();
     }
 
     public void PlaceItemOnBelt(GameObject item)
@@ -121,5 +179,15 @@ public class Belt : MonoBehaviour
             item.transform.position = GetItemPosition();
             isSpaceTaken = true;
         }
+    }
+
+    public void PauseBelt()
+    {
+        isPaused = true;
+    }
+
+    public void ResumeBelt()
+    {
+        isPaused = false;
     }
 }

@@ -4,6 +4,7 @@ using System.Collections;
 public class OreDrill : MonoBehaviour
 {
     public float productionInterval = 5f;
+    public float animationDuration = 3f;
     private GridGenerator gridGenerator;
     private Vector2Int gridPosition;
     private Vector2Int outputPosition;
@@ -33,7 +34,16 @@ public class OreDrill : MonoBehaviour
         int y = Mathf.RoundToInt(worldPosition.z - gridGenerator.transform.position.z);
         return new Vector2Int(x, y);
     }
-
+    Vector2Int RotateVector2(Vector2Int v, float angle)
+    {
+        float rad = -angle * Mathf.Deg2Rad;
+        float cos = Mathf.Cos(rad);
+        float sin = Mathf.Sin(rad);
+        return new Vector2Int(
+            Mathf.RoundToInt(v.x * cos - v.y * sin),
+            Mathf.RoundToInt(v.x * sin + v.y * cos)
+        );
+    }
     private Vector2Int GetOutputPosition()
     {
         BuildingPlacer buildingPlacer = FindObjectOfType<BuildingPlacer>();
@@ -42,12 +52,15 @@ public class OreDrill : MonoBehaviour
             Building buildingData = buildingPlacer.GetSelectedBuildingData();
             if (buildingData != null && buildingData.HasOutputTile)
             {
-                // The output tile is relative to the building's position
-                return gridPosition + buildingData.outputTile;
+                //float rotation = transform.rotation.eulerAngles.y;
+                Quaternion objectRotation = transform.rotation;
+                Vector3 eulerAngles = objectRotation.eulerAngles;
+                float rotation =  Mathf.Round(eulerAngles.y / 90) * 90;
+                Vector2Int rotatedOutputTile = RotateVector2(buildingData.outputTile, rotation);
+                return gridPosition + rotatedOutputTile;
             }
         }
         Debug.LogError("COULDNT FIND OUTPUT TILE");
-        // Fallback: If we can't get the data, assume output is one tile to the right
         return gridPosition + Vector2Int.right;
     }
 
@@ -55,13 +68,11 @@ public class OreDrill : MonoBehaviour
     {
         while (true)
         {
-            // Wait for the production interval
-            yield return new WaitForSeconds(productionInterval);
-
-            // Try to place the resource
+            //yield return new WaitForSeconds(productionInterval);
             yield return StartCoroutine(TryPlaceResource());
         }
     }
+
     private IEnumerator TryPlaceResource()
     {
         while (true)
@@ -76,11 +87,20 @@ public class OreDrill : MonoBehaviour
                     GameObject producedObject = Instantiate(resourcePrefab, spawnPosition, resourcePrefab.transform.rotation);
                     propBlock.SetFloat("_StartTime", Time.time);
                     producedObject.GetComponent<Renderer>().SetPropertyBlock(propBlock);
+
+                    // Pause the belt and start the animation
+                    outputBelt.PauseBelt();
                     outputBelt.PlaceItemOnBelt(producedObject);
-                    yield break; // Exit the coroutine after successfully placing the resource
+
+                    // Wait for the animation duration
+                    yield return new WaitForSeconds(animationDuration);
+
+                    // Resume the belt movement
+                    outputBelt.ResumeBelt();
+
+                    yield break;
                 }
             }
-            // If we couldn't place the resource, wait a short time before trying again
             yield return new WaitForSeconds(0.01f);
         }
     }

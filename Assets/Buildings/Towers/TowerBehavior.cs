@@ -1,13 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 public class TowerBehavior : MonoBehaviour
 {
     public TowerData towerData;
-    public Transform turretRotationPart;
-    public Transform firePoint;
     public GameObject projectilePrefab;
+    private Transform turretRotationPart;
+    private Transform firePoint;
 
     private float fireCountdown = 0f;
     private Enemy targetEnemy;
@@ -16,6 +17,8 @@ public class TowerBehavior : MonoBehaviour
     private void Start()
     {
         InvokeRepeating(nameof(UpdateTarget), 0f, 0.5f);
+        turretRotationPart = transform.GetChild(0).GetChild(0);
+        firePoint = turretRotationPart.GetChild(0);
     }
 
     private void Update()

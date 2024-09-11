@@ -23,6 +23,7 @@ public class BuildingPlacer : MonoBehaviour
     private Vector2Int rotatedSpecialTile;
 
     public Action<GameObject> OnBuildingPlaced;
+    public Action<GameObject> OnBuildingDestroyed;
 
     private bool continuousPlacement = false;
     private int lastSelectedBuildingIndex = -1;
@@ -317,8 +318,7 @@ public class BuildingPlacer : MonoBehaviour
                     {
                         // Reset the preview for the next placement, maintaining rotation
                         Destroy(previewBuilding);
-                        previewBuilding = Instantiate(selectedBuilding);
-                        previewBuilding.transform.rotation = Quaternion.Euler(0f, currentRotation, 0f);
+                        previewBuilding = Instantiate(selectedBuilding, Vector3.down*3, Quaternion.Euler(0f, currentRotation, 0f));
                         if (rangeIndicator != null)
                         {
                             rangeIndicator = previewBuilding.GetComponent<TowerRangeIndicator>();
@@ -429,6 +429,7 @@ public class BuildingPlacer : MonoBehaviour
             }
 
             // Destroy the building GameObject
+            OnBuildingDestroyed?.Invoke(buildingToDestroy);
             Destroy(buildingToDestroy);
 
             // Optional: Trigger any post-destruction events or effects

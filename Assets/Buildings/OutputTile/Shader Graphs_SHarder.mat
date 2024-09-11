@@ -41,8 +41,9 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Speed: 3
-    - _Strength: 342.2
+    - _Strength: 250
     - _Variance: 0.2
+    - _alphaStrength: 25
     m_Colors: []
   m_BuildTextureStacks: []
 --- !u!114 &9090062206812372183

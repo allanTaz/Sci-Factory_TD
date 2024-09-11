@@ -19,6 +19,7 @@ public class Pathfinder : MonoBehaviour
     void Start()
     {
         buildingPlacer.OnBuildingPlaced += FindPath;
+        buildingPlacer.OnBuildingDestroyed += FindPath;
         pathLine = gameObject.AddComponent<LineRenderer>();
         pathLine.startWidth = 0.1f;
         pathLine.endWidth = 0.1f;

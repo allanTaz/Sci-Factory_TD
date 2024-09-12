@@ -1,11 +1,8 @@
-using System;
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections;
 
 public class Belt : MonoBehaviour
 {
-    private static int _beltID = 0;
     [SerializeField] float beltSpeed = 3f;
     public Belt beltInSequence;
     public GameObject currentItem;
@@ -18,7 +15,9 @@ public class Belt : MonoBehaviour
     private void OnDestroy()
     {
         Destroy(currentItem);
+        BeltManager.Instance.UnregisterBelt(this);
     }
+
     private void Start()
     {
         _gridGenerator = FindObjectOfType<GridGenerator>();
@@ -30,10 +29,12 @@ public class Belt : MonoBehaviour
 
         _gridPosition = GetGridPosition();
         UpdateNextDestination();
-        gameObject.name = $"Belt: {_beltID++}";
+
+        // Use BeltManager.Instance to ensure it's created if it doesn't exist
+        BeltManager.Instance.RegisterBelt(this);
     }
 
-    private void Update()
+    public void Tick()
     {
         if (beltInSequence == null)
             UpdateNextDestination();

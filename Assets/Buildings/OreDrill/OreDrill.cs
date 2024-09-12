@@ -72,7 +72,6 @@ public class OreDrill : MonoBehaviour
             yield return StartCoroutine(TryPlaceResource());
         }
     }
-
     private IEnumerator TryPlaceResource()
     {
         while (true)
@@ -83,25 +82,60 @@ public class OreDrill : MonoBehaviour
                 Belt outputBelt = outputCell.PlacedObject.GetComponent<Belt>();
                 if (outputBelt != null && !outputBelt.isSpaceTaken)
                 {
-                    Vector3 spawnPosition = gridGenerator.GetWorldPosition(outputPosition) + Vector3.up * 1.2f;
-                    GameObject producedObject = Instantiate(resourcePrefab, spawnPosition, resourcePrefab.transform.rotation);
-                    propBlock.SetFloat("_StartTime", Time.time);
-                    producedObject.GetComponent<Renderer>().SetPropertyBlock(propBlock);
+                    if (!CheckForIncomingItems(outputBelt))
+                    {
+                        Vector3 spawnPosition = gridGenerator.GetWorldPosition(outputPosition) + Vector3.up * 1.2f;
+                        GameObject producedObject = Instantiate(resourcePrefab, spawnPosition, resourcePrefab.transform.rotation);
+                        propBlock.SetFloat("_StartTime", Time.time);
+                        producedObject.GetComponent<Renderer>().SetPropertyBlock(propBlock);
 
-                    // Pause the belt and start the animation
-                    outputBelt.PauseBelt();
-                    outputBelt.PlaceItemOnBelt(producedObject);
+                        // Pause the belt and start the animation
+                        outputBelt.PauseBelt();
+                        outputBelt.PlaceItemOnBelt(producedObject);
 
-                    // Wait for the animation duration
-                    yield return new WaitForSeconds(animationDuration);
+                        // Wait for the animation duration
+                        yield return new WaitForSeconds(animationDuration);
 
-                    // Resume the belt movement
-                    outputBelt.ResumeBelt();
-
-                    yield break;
+                        // Resume the belt movement
+                        outputBelt.ResumeBelt();
+                        yield break;
+                    }
                 }
             }
             yield return new WaitForSeconds(0.01f);
         }
+    }
+
+    private bool CheckForIncomingItems(Belt targetBelt)
+    {
+        // Check all neighboring belts
+        Vector2Int[] directions = new Vector2Int[]
+        {
+        new Vector2Int(1, 0),
+        new Vector2Int(-1, 0),
+        new Vector2Int(0, 1),
+        new Vector2Int(0, -1)
+        };
+
+        foreach (Vector2Int dir in directions)
+        {
+            Vector2Int neighborPos = outputPosition + dir;
+            GridCell neighborCell = gridGenerator.GetCell(neighborPos.x, neighborPos.y);
+
+            if (neighborCell != null && neighborCell.IsOccupied)
+            {
+                Belt neighborBelt = neighborCell.PlacedObject.GetComponent<Belt>();
+                if (neighborBelt != null && neighborBelt.currentItem != null)
+                {
+                    // Check if this neighboring belt is pointing towards our target belt
+                    if (neighborBelt.beltInSequence == targetBelt)
+                    {
+                        return true; // There's an item coming towards our target belt
+                    }
+                }
+            }
+        }
+
+        return false; // No incoming items found
     }
 }

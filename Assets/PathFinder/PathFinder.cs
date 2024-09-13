@@ -5,9 +5,9 @@ using System.Linq;
 
 public class Pathfinder : MonoBehaviour
 {
-    [SerializeField] private GridGenerator gridGenerator;
     [SerializeField] private Material pathLineMaterial;
-    [SerializeField] private BuildingPlacer buildingPlacer;
+    private GridGenerator gridGenerator;
+    private BuildingPlacer buildingPlacer;
     private LineRenderer pathLine;
 
     private GameObject startObject;
@@ -18,6 +18,9 @@ public class Pathfinder : MonoBehaviour
 
     void Start()
     {
+        startObject = gameObject;
+        gridGenerator = FindAnyObjectByType<GridGenerator>();
+        buildingPlacer = FindAnyObjectByType<BuildingPlacer>();
         buildingPlacer.OnBuildingPlaced += FindPath;
         buildingPlacer.OnBuildingDestroyed += FindPath;
         pathLine = gameObject.AddComponent<LineRenderer>();
@@ -27,8 +30,7 @@ public class Pathfinder : MonoBehaviour
 
         gridOffset = gridGenerator.transform.position;
         //Debug.Log($"Grid offset: {gridOffset}");
-
-        StartCoroutine(FindPathWhenReady());
+        FindPathWhenReady();
     }
 
     public List<Vector3> GetPath()
@@ -42,13 +44,11 @@ public class Pathfinder : MonoBehaviour
         return worldPath;
     }
 
-    IEnumerator FindPathWhenReady()
+    private void FindPathWhenReady()
     {
-        //Debug.Log("Waiting for grid to initialize...");
-        yield return new WaitForSeconds(0.5f);
-       //Debug.Log("Finding start and end objects...");
-        FindStartAndEndObjects();
-        if (startObject != null && endObject != null)
+        endObject = GameObject.FindGameObjectWithTag("Core");
+
+        if (endObject != null)
         {
             //Debug.Log("Start and end objects found. Finding path...");
             FindPath();
@@ -56,17 +56,8 @@ public class Pathfinder : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Start or end object not found. Cannot find path.");
+            Debug.LogError("End object not found. Cannot find path.");
         }
-    }
-
-    void FindStartAndEndObjects()
-    {
-        startObject = GameObject.FindGameObjectWithTag("EnemySpawn");
-        endObject = GameObject.FindGameObjectWithTag("Core");
-
-        if (startObject == null) Debug.LogError("EnemySpawn not found");
-        if (endObject == null) Debug.LogError("Core not found");
     }
 
     public void FindPath(GameObject gameObject = null)
@@ -80,7 +71,6 @@ public class Pathfinder : MonoBehaviour
         Vector2Int startPos = GetGridPosition(startObject);
         Vector2Int endPos = GetGridPosition(endObject);
 
-        //Debug.Log($"Finding path from {startPos} to {endPos}");
         path = AStar(startPos, endPos);
         DisplayPath();
     }

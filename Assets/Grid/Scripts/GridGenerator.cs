@@ -100,20 +100,6 @@ public class GridGenerator : MonoBehaviour
         return null;
     }
 
-    public GameObject PlaceObject(Vector2Int position, GameObject obj)
-    {
-        EnsureGridCoverage(position);
-
-        GridCell cell = grid[position];
-        if (cell != null && !cell.IsOccupied)
-        {
-            Vector3 worldPosition = GetWorldPosition(position);
-            GameObject placedObj = Instantiate(obj, worldPosition, Quaternion.identity);
-            cell.PlaceObject(placedObj);
-            return placedObj;
-        }
-        return null;
-    }
 
     public GameObject PlaceObject(Vector2Int position, GameObject obj, Transform objTransform = null, Vector2Int size = default)
     {

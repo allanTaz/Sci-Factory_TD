@@ -277,21 +277,6 @@ public class BuildingPlacer : MonoBehaviour
 
         return true;
     }
-    public void PlaceObjectAtPosition(Vector2Int gridPosition, GameObject objectPrefab)
-    {
-        if (!gridGenerator.IsValidGridPosition(gridPosition)) return;
-
-        GridCell cell = gridGenerator.GetCell(gridPosition);
-        if (cell != null && !cell.IsOccupied)
-        {
-            Vector3 worldPosition = gridGenerator.GetWorldPosition(gridPosition);
-            GameObject placedObject = Instantiate(objectPrefab, worldPosition, Quaternion.identity);
-            cell.PlaceObject(placedObject);
-
-            // If it's an ore or enemy spawner, we don't need to occupy multiple cells
-            // But you might want to add special handling for these objects if needed
-        }
-    }
     private void PlaceBuilding()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

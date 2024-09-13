@@ -81,7 +81,7 @@ public class ChunkExpansionSystem : MonoBehaviour
                         gridGenerator.SetCellAsOre(globalGridPosition);
                         break;
                     case WFCChunkGenerator.CellType.EnemySpawner:
-                        buildingPlacer.PlaceObjectAtPosition(globalGridPosition, enemySpawnerPrefab);
+                        gridGenerator.PlaceObject(globalGridPosition, enemySpawnerPrefab);
                         break;
                 }
             }

@@ -1,57 +1,84 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class GridGenerator : MonoBehaviour
 {
-    [SerializeField] private int width = 20;
-    [SerializeField] private int height = 10;
     [SerializeField] private GameObject gridCellVisualPrefab;
-    [SerializeField] private GameObject orePrefab;
+    [SerializeField] private GameObject oreCellVisualPrefab;
     [SerializeField] private GameObject baseCorePrefab;
     [SerializeField] private GameObject enemySpawnerPrefab;
     private Material defaultCellMaterial;
     private GameObject enemySpawner;
-    private GridCell[,] grid;
-    private GameObject[,] visualCells;
-    public int gridWidth { get { return width; } set { width = value; } }
-    public int gridHeight { get { return height; } set { height = value; } }
+    private Dictionary<Vector2Int, GridCell> grid = new Dictionary<Vector2Int, GridCell>();
+    private Dictionary<Vector2Int, GameObject> visualCells = new Dictionary<Vector2Int, GameObject>();
+    public Vector2Int MinBounds { get; private set; }
+    public Vector2Int MaxBounds { get; private set; }
+
     private void Awake()
     {
-        GenerateGrid();
-        PlaceObject(new Vector2Int(0, 0), baseCorePrefab);
-        enemySpawner = PlaceObject(new Vector2Int(width - 1, height - 1), enemySpawnerPrefab);
+        MinBounds = Vector2Int.zero;
+        MaxBounds = new Vector2Int(9, 9);  // Initial 10x10 grid
+        GenerateInitialGrid();
+        PlaceObject(Vector2Int.zero, baseCorePrefab);
     }
 
-    void GenerateGrid()
+    private void GenerateInitialGrid()
     {
-        grid = new GridCell[width, height];
-        visualCells = new GameObject[width, height];
-        Vector3 startPosition = transform.position;
-        Vector2Int orePosition = new Vector2Int(Random.Range(2, width - 2), Random.Range(2, height - 2));
-
-        for (int x = 0; x < width; x++)
+        for (int x = MinBounds.x; x <= MaxBounds.x; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = MinBounds.y; y <= MaxBounds.y; y++)
             {
-                bool isOre = (x == orePosition.x && y == orePosition.y);
-                grid[x, y] = new GridCell(x, y, isOre);
+                CreateCell(new Vector2Int(x, y));
+            }
+        }
+    }
 
-                Vector3 position = GetWorldPosition(new Vector2Int(x, y));
-                GameObject cellVisual = Instantiate(isOre ? orePrefab : gridCellVisualPrefab, position, Quaternion.identity, transform);
-                visualCells[x, y] = cellVisual;
-                if (!isOre && defaultCellMaterial == null)
+    private void CreateCell(Vector2Int position)
+    {
+        if (!grid.ContainsKey(position))
+        {
+            GridCell newCell = new GridCell(position.x, position.y);
+            grid[position] = newCell;
+
+            Vector3 worldPosition = GetWorldPosition(position);
+            GameObject cellVisual = Instantiate(gridCellVisualPrefab, worldPosition, Quaternion.identity, transform);
+            visualCells[position] = cellVisual;
+
+            if (defaultCellMaterial == null)
+            {
+                Renderer renderer = cellVisual.GetComponent<Renderer>();
+                if (renderer != null)
                 {
-                    Renderer renderer = cellVisual.GetComponent<Renderer>();
-                    if (renderer != null)
-                    {
-                        defaultCellMaterial = renderer.material;
-                    }
+                    defaultCellMaterial = renderer.material;
                 }
             }
         }
+    }
 
-        //Debug.Log($"Grid generated with dimensions {width}x{height}");
+    public void EnsureGridCoverage(Vector2Int position)
+    {
+        MinBounds = Vector2Int.Min(MinBounds, position);
+        MaxBounds = Vector2Int.Max(MaxBounds, position);
+        CreateCell(position);
+    }
+
+    public void SetCellAsOre(Vector2Int position)
+    {
+        EnsureGridCoverage(position);
+
+        GridCell cell = grid[position];
+        if (cell != null && !cell.IsOre)
+        {
+            cell.SetAsOre();
+
+            // Replace the visual with ore prefab
+            if (visualCells.ContainsKey(position))
+            {
+                Destroy(visualCells[position]);
+            }
+            Vector3 worldPosition = GetWorldPosition(position);
+            visualCells[position] = Instantiate(oreCellVisualPrefab, worldPosition, Quaternion.identity, transform);
+        }
     }
 
     public Vector3 GetWorldPosition(Vector2Int gridPosition)
@@ -61,14 +88,29 @@ public class GridGenerator : MonoBehaviour
 
     public bool IsValidGridPosition(Vector2Int position)
     {
-        return position.x >= 0 && position.x < width && position.y >= 0 && position.y < height;
+        return grid.ContainsKey(position);
     }
 
-    public GridCell GetCell(int x, int y)
+    public GridCell GetCell(Vector2Int position)
     {
-        if (IsValidGridPosition(new Vector2Int(x, y)))
+        if (grid.TryGetValue(position, out GridCell cell))
         {
-            return grid[x, y];
+            return cell;
+        }
+        return null;
+    }
+
+    public GameObject PlaceObject(Vector2Int position, GameObject obj)
+    {
+        EnsureGridCoverage(position);
+
+        GridCell cell = grid[position];
+        if (cell != null && !cell.IsOccupied)
+        {
+            Vector3 worldPosition = GetWorldPosition(position);
+            GameObject placedObj = Instantiate(obj, worldPosition, Quaternion.identity);
+            cell.PlaceObject(placedObj);
+            return placedObj;
         }
         return null;
     }
@@ -83,16 +125,18 @@ public class GridGenerator : MonoBehaviour
             for (int y = 0; y < size.y; y++)
             {
                 Vector2Int checkPosition = position + new Vector2Int(x, y);
-                GridCell cell = GetCell(checkPosition.x, checkPosition.y);
+                EnsureGridCoverage(checkPosition);
+                GridCell cell = GetCell(checkPosition);
                 if (cell == null || cell.IsOccupied)
                 {
                     return null; // Cannot place the object
                 }
             }
         }
+
         GameObject placedObj = null;
-        // If all cells are available, place the object
         Vector3 worldPosition = GetWorldPosition(position);
+
         if (objTransform != null)
         {
             placedObj = Instantiate(obj, worldPosition, objTransform.rotation);
@@ -101,6 +145,7 @@ public class GridGenerator : MonoBehaviour
         {
             placedObj = Instantiate(obj, worldPosition, Quaternion.identity);
         }
+
         float objectHeight = CalculateObjectHeight(placedObj);
 
         if (objTransform == null)
@@ -123,13 +168,14 @@ public class GridGenerator : MonoBehaviour
             for (int y = 0; y < size.y; y++)
             {
                 Vector2Int occupyPosition = position + new Vector2Int(x, y);
-                GridCell cell = GetCell(occupyPosition.x, occupyPosition.y);
+                GridCell cell = GetCell(occupyPosition);
                 cell.PlaceObject(placedObj);
             }
         }
 
         return placedObj;
     }
+
     private float CalculateObjectHeight(GameObject obj)
     {
         Renderer renderer = obj.GetComponent<Renderer>();
@@ -154,9 +200,10 @@ public class GridGenerator : MonoBehaviour
         Debug.LogWarning("No renderer found on object or its children. Using default height.");
         return 1f; // Default height
     }
+
     public void RemoveObject(Vector2Int position)
     {
-        GridCell cell = GetCell(position.x, position.y);
+        GridCell cell = GetCell(position);
         if (cell != null && cell.IsOccupied)
         {
             GameObject objToRemove = cell.PlacedObject;
@@ -170,22 +217,24 @@ public class GridGenerator : MonoBehaviour
 
     public Vector3 GetEnemySpawnPosition()
     {
-        return GetWorldPosition(new Vector2Int(width - 1, height - 1));
+        return GetWorldPosition(MaxBounds);
     }
 
     public Vector3 GetBaseCorePosition()
     {
-        return GetWorldPosition(new Vector2Int(0, 0));
+        return GetWorldPosition(Vector2Int.zero);
     }
+
     public Material GetDefaultCellMaterial()
     {
         return defaultCellMaterial;
     }
-    public GameObject GetCellVisual(int x, int y)
+
+    public GameObject GetCellVisual(Vector2Int position)
     {
-        if (IsValidGridPosition(new Vector2Int(x, y)))
+        if (visualCells.TryGetValue(position, out GameObject visual))
         {
-            return visualCells[x, y];
+            return visual;
         }
         return null;
     }

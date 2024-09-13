@@ -76,7 +76,7 @@ public class OreDrill : MonoBehaviour
     {
         while (true)
         {
-            GridCell outputCell = gridGenerator.GetCell(outputPosition.x, outputPosition.y);
+            GridCell outputCell = gridGenerator.GetCell(outputPosition);
             if (outputCell != null && outputCell.IsOccupied)
             {
                 Belt outputBelt = outputCell.PlacedObject.GetComponent<Belt>();
@@ -120,7 +120,7 @@ public class OreDrill : MonoBehaviour
         foreach (Vector2Int dir in directions)
         {
             Vector2Int neighborPos = outputPosition + dir;
-            GridCell neighborCell = gridGenerator.GetCell(neighborPos.x, neighborPos.y);
+            GridCell neighborCell = gridGenerator.GetCell(neighborPos);
 
             if (neighborCell != null && neighborCell.IsOccupied)
             {

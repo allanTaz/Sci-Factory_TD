@@ -182,7 +182,7 @@ public class BuildingPlacer : MonoBehaviour
         foreach (Vector2Int offset in rotatedOccupiedTiles)
         {
             Vector2Int cellPosition = gridPosition + offset;
-            GameObject cellObject = gridGenerator.GetCellVisual(cellPosition.x, cellPosition.y);
+            GameObject cellObject = gridGenerator.GetCellVisual(cellPosition);
             if (cellObject != null)
             {
                 Renderer cellRenderer = cellObject.GetComponent<Renderer>();
@@ -200,7 +200,7 @@ public class BuildingPlacer : MonoBehaviour
         if (selectedBuildingProps.HasSpecialTile)
         {
             Vector2Int specialPosition = gridPosition + rotatedSpecialTile;
-            GameObject specialCellObject = gridGenerator.GetCellVisual(specialPosition.x, specialPosition.y);
+            GameObject specialCellObject = gridGenerator.GetCellVisual(specialPosition);
             if (specialCellObject != null)
             {
                 Renderer cellRenderer = specialCellObject.GetComponent<Renderer>();
@@ -216,7 +216,7 @@ public class BuildingPlacer : MonoBehaviour
         if (selectedBuildingProps.HasOutputTile)
         {
             Vector2Int outputPosition = gridPosition + rotatedOutputTile;
-            GameObject outputCellObject = gridGenerator.GetCellVisual(outputPosition.x, outputPosition.y);
+            GameObject outputCellObject = gridGenerator.GetCellVisual(outputPosition);
             if (outputCellObject != null)
             {
                 Renderer cellRenderer = outputCellObject.GetComponent<Renderer>();
@@ -246,7 +246,7 @@ public class BuildingPlacer : MonoBehaviour
         foreach (Vector2Int offset in rotatedOccupiedTiles)
         {
             Vector2Int checkPosition = gridPosition + offset;
-            GridCell cell = gridGenerator.GetCell(checkPosition.x, checkPosition.y);
+            GridCell cell = gridGenerator.GetCell(checkPosition);
             if (cell == null || cell.IsOccupied)
             {
                 return false;
@@ -257,7 +257,7 @@ public class BuildingPlacer : MonoBehaviour
         if (selectedBuildingProps.HasSpecialTile)
         {
             Vector2Int specialPosition = gridPosition + rotatedSpecialTile;
-            GridCell specialCell = gridGenerator.GetCell(specialPosition.x, specialPosition.y);
+            GridCell specialCell = gridGenerator.GetCell(specialPosition);
             if (specialCell == null || specialCell.IsOccupied || (selectedBuildingProps.digOre && !specialCell.IsOre))
             {
                 return false;
@@ -268,7 +268,7 @@ public class BuildingPlacer : MonoBehaviour
         if (selectedBuildingProps.HasOutputTile)
         {
             Vector2Int outputPosition = gridPosition + rotatedOutputTile;
-            GridCell outputCell = gridGenerator.GetCell(outputPosition.x, outputPosition.y);
+            GridCell outputCell = gridGenerator.GetCell(outputPosition);
             if (outputCell == null || (outputCell.IsOccupied && outputCell.PlacedObject.GetComponent<Belt>() != null))
             {
                 return false;
@@ -277,7 +277,21 @@ public class BuildingPlacer : MonoBehaviour
 
         return true;
     }
+    public void PlaceObjectAtPosition(Vector2Int gridPosition, GameObject objectPrefab)
+    {
+        if (!gridGenerator.IsValidGridPosition(gridPosition)) return;
 
+        GridCell cell = gridGenerator.GetCell(gridPosition);
+        if (cell != null && !cell.IsOccupied)
+        {
+            Vector3 worldPosition = gridGenerator.GetWorldPosition(gridPosition);
+            GameObject placedObject = Instantiate(objectPrefab, worldPosition, Quaternion.identity);
+            cell.PlaceObject(placedObject);
+
+            // If it's an ore or enemy spawner, we don't need to occupy multiple cells
+            // But you might want to add special handling for these objects if needed
+        }
+    }
     private void PlaceBuilding()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -296,7 +310,7 @@ public class BuildingPlacer : MonoBehaviour
                     foreach (Vector2Int offset in rotatedOccupiedTiles)
                     {
                         Vector2Int occupyPosition = gridPosition + offset;
-                        GridCell cell = gridGenerator.GetCell(occupyPosition.x, occupyPosition.y);
+                        GridCell cell = gridGenerator.GetCell(occupyPosition);
                         if (cell != null)
                         {
                             cell.PlaceObject(placedBuilding);
@@ -402,18 +416,19 @@ public class BuildingPlacer : MonoBehaviour
     }
     private void DestroyBuilding(Vector2Int position)
     {
-        GridCell cell = gridGenerator.GetCell(position.x, position.y);
+        GridCell cell = gridGenerator.GetCell(position);
         if (cell != null && cell.IsOccupied)
         {
             GameObject buildingToDestroy = cell.PlacedObject;
 
             // Find all cells occupied by this building
             List<Vector2Int> occupiedPositions = new List<Vector2Int>();
-            for (int x = 0; x < gridGenerator.gridWidth; x++)
+            for (int x = 0; x < gridGenerator.MaxBounds.x; x++)
             {
-                for (int y = 0; y < gridGenerator.gridHeight; y++)
+                for (int y = 0; y < gridGenerator.MaxBounds.y; y++)
                 {
-                    GridCell checkCell = gridGenerator.GetCell(x, y);
+                    Vector2Int xy = new Vector2Int(x, y);
+                    GridCell checkCell = gridGenerator.GetCell(xy);
                     if (checkCell != null && checkCell.PlacedObject == buildingToDestroy)
                     {
                         occupiedPositions.Add(new Vector2Int(x, y));
@@ -424,7 +439,7 @@ public class BuildingPlacer : MonoBehaviour
             // Clear all occupied cells
             foreach (Vector2Int pos in occupiedPositions)
             {
-                GridCell occupiedCell = gridGenerator.GetCell(pos.x, pos.y);
+                GridCell occupiedCell = gridGenerator.GetCell(pos);
                 occupiedCell.RemoveObject();
             }
 

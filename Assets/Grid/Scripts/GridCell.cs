@@ -14,6 +14,10 @@ public class GridCell
         IsOre = isOre;
     }
 
+    public void SetAsOre()
+    {
+        IsOre = true;
+    }
     public bool PlaceObject(GameObject obj)
     {
         if (!IsOccupied)

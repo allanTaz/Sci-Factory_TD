@@ -153,7 +153,7 @@ public class Pathfinder : MonoBehaviour
 
     private bool IsWalkable(Vector2Int pos)
     {
-        GridCell cell = gridGenerator.GetCell(pos.x, pos.y);
+        GridCell cell = gridGenerator.GetCell(pos);
         if (cell == null)
         {
             return false;

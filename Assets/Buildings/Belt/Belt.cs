@@ -124,7 +124,7 @@ public class Belt : MonoBehaviour
     {
         Vector2Int direction = GetForwardDirection();
         Vector2Int nextGridPosition = _gridPosition + direction;
-        GridCell nextCell = _gridGenerator.GetCell(nextGridPosition.x, nextGridPosition.y);
+        GridCell nextCell = _gridGenerator.GetCell(nextGridPosition);
         if (nextCell != null && nextCell.IsOccupied)
         {
             Belt nextBelt = nextCell.PlacedObject?.GetComponent<Belt>();

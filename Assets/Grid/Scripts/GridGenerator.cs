@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class GridGenerator : MonoBehaviour
 {
-    [SerializeField] private int width = 18;
-    [SerializeField] private int height = 9;
+    [SerializeField] private int width = 20;
+    [SerializeField] private int height = 10;
     [SerializeField] private GameObject gridCellVisualPrefab;
     [SerializeField] private GameObject orePrefab;
     [SerializeField] private GameObject baseCorePrefab;

@@ -113,7 +113,7 @@ public class Belt : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Destination became invalid while moving item on belt.");
+                Destroy(currentItem);
             }
         }
         isSpaceTaken = false;

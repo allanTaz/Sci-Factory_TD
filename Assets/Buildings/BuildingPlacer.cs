@@ -269,7 +269,7 @@ public class BuildingPlacer : MonoBehaviour
         {
             Vector2Int outputPosition = gridPosition + rotatedOutputTile;
             GridCell outputCell = gridGenerator.GetCell(outputPosition);
-            if (outputCell == null || (outputCell.IsOccupied && outputCell.PlacedObject.GetComponent<Belt>() != null))
+            if (outputCell == null || (outputCell.IsOccupied && (outputCell.PlacedObject.GetComponent<Belt>() == null)))
             {
                 return false;
             }

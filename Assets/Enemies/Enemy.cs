@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Enemy : MonoBehaviour
 {
     public EnemyData enemyData;
-
+    public Pathfinder pathfinder;
     private float currentHealth;
     private List<Vector3> path;
     private int currentPathIndex;
@@ -76,7 +76,6 @@ public class Enemy : MonoBehaviour
 
     void RequestPath()
     {
-        Pathfinder pathfinder = FindObjectOfType<Pathfinder>();
         if (pathfinder != null)
         {
             path = pathfinder.GetPath();

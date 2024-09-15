@@ -1,15 +1,17 @@
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class TopDownCameraController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 20f;
-    [SerializeField] private float edgeThreshold = 10f;
     [SerializeField] private float zoomSpeed = 4f;
     [SerializeField] private float minZoom = 12f;
     [SerializeField] private float maxZoom = 40f;
     [SerializeField] private float rotationAngle = 60f;
+    [SerializeField] private float baseDragSpeed = 3f;
 
     private Camera cam;
+    private Vector3 lastMousePosition;
+    private bool isDragging = false;
 
     private void Start()
     {
@@ -20,28 +22,28 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        HandleMovement();
+        HandleKeyboardMovement();
+        HandleMouseDrag();
         HandleZoom();
     }
 
-    private void HandleMovement()
+    private void HandleKeyboardMovement()
     {
         Vector3 moveDirection = Vector3.zero;
 
-        // Keyboard input
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || Input.mousePosition.y >= Screen.height - edgeThreshold)
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
             moveDirection += Vector3.forward;
         }
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || Input.mousePosition.y <= edgeThreshold)
+        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             moveDirection += Vector3.back;
         }
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || Input.mousePosition.x <= edgeThreshold)
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             moveDirection += Vector3.left;
         }
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || Input.mousePosition.x >= Screen.width - edgeThreshold)
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             moveDirection += Vector3.right;
         }
@@ -54,6 +56,36 @@ public class CameraController : MonoBehaviour
 
         // Apply movement
         transform.Translate(moveDirection * moveSpeed * Time.deltaTime, Space.World);
+    }
+
+    private void HandleMouseDrag()
+    {
+        if (Input.GetMouseButtonDown(2)) // Middle mouse button pressed
+        {
+            isDragging = true;
+            lastMousePosition = Input.mousePosition;
+        }
+        else if (Input.GetMouseButtonUp(2)) // Middle mouse button released
+        {
+            isDragging = false;
+        }
+
+        if (isDragging)
+        {
+            Vector3 deltaMouse = Input.mousePosition - lastMousePosition;
+            float currentDragSpeed = CalculateDragSpeed();
+            Vector3 movement = new Vector3(-deltaMouse.x, 0, -deltaMouse.y) * currentDragSpeed * Time.deltaTime;
+            transform.Translate(movement, Space.World);
+            lastMousePosition = Input.mousePosition;
+        }
+    }
+
+    private float CalculateDragSpeed()
+    {
+        float zoomLevel = transform.position.y - minZoom;
+        float zoomRange = maxZoom - minZoom;
+        float dragSpeedMultiplier = 1f + (zoomLevel / zoomRange);
+        return baseDragSpeed * dragSpeedMultiplier;
     }
 
     private void HandleZoom()

@@ -72,6 +72,7 @@ public class EnemySpawner : MonoBehaviour
         {
             enemyComponent.enemyData = enemyData;
             enemyComponent.OnDestroyed += HandleEnemyDestroyed;
+            enemyComponent.pathfinder = GetComponent<Pathfinder>();
             activeEnemies++;
             OnEnemySpawned?.Invoke(enemyComponent);
         }

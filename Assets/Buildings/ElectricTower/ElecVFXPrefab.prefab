@@ -310,7 +310,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2457732952205522091}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: ElecVFXPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

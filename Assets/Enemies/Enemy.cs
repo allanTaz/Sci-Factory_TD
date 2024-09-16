@@ -83,7 +83,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Pathfinder not found in the scene.");
+            //Debug.LogError("Pathfinder not found in the scene.");
         }
     }
 

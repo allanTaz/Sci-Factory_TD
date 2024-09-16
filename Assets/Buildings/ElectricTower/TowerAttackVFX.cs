@@ -1,10 +1,15 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class TowerAttackVFX : MonoBehaviour
 {
     public GameObject vfxPrefab;
     public float projectileSpeed = 5f;
+    public int maxChainCount = 3;
+    public float chainRadius = 5f;
+    public float maxRange = 10f; // Maximum range of the tower
 
     [Header("Curve Control")]
     public float pos2Speed = 1f;
@@ -12,120 +17,161 @@ public class TowerAttackVFX : MonoBehaviour
     public float pos2Randomness = 0.5f;
     public float pos3Randomness = 0.7f;
 
-    public Transform tower;
-    public Transform enemy;
+    public Transform tower { get; set; }
+    private List<Enemy> enemiesInRange = new List<Enemy>();
+    private List<LightningSegment> lightningSegments = new List<LightningSegment>();
 
-    private GameObject vfxInstance;
-    private Transform pos1, pos2, pos3, pos4;
-    private Vector3 initialPos2, initialPos3;
-    private bool isAttacking = false;
+    private class LightningSegment
+    {
+        public GameObject vfxObject;
+        public Transform startPoint;
+        public Transform endPoint;
+        public Transform pos1, pos2, pos3, pos4;
+
+        public LightningSegment(GameObject vfx, Transform start, Transform end)
+        {
+            vfxObject = vfx;
+            startPoint = start;
+            endPoint = end;
+            pos1 = vfx.transform.Find("Pos1");
+            pos2 = vfx.transform.Find("Pos2");
+            pos3 = vfx.transform.Find("Pos3");
+            pos4 = vfx.transform.Find("Pos4");
+        }
+    }
+
+    private void Update()
+    {
+        UpdateLightningChain();
+    }
+
+    public void UpdateEnemiesInRange(List<Enemy> newEnemiesInRange)
+    {
+        enemiesInRange = newEnemiesInRange.Where(e => e != null).ToList();
+    }
 
     public void StartAttack()
     {
-        if (tower == null || enemy == null)
+        if (tower == null || enemiesInRange.Count == 0)
         {
-            Debug.LogError("Tower or Enemy transform is not set!");
+            //Debug.LogWarning("Tower is not set or no enemies in range!");
             return;
         }
 
-        if (isAttacking)
+        UpdateLightningChain();
+    }
+
+    private void CreateLightningSegment(Transform start, Transform end)
+    {
+        GameObject vfxInstance = Instantiate(vfxPrefab, start.position, Quaternion.identity);
+        LightningSegment segment = new LightningSegment(vfxInstance, start, end);
+        lightningSegments.Add(segment);
+        StartCoroutine(AnimateLightningSegment(segment));
+    }
+
+    private IEnumerator AnimateLightningSegment(LightningSegment segment)
+    {
+        while (segment.startPoint != null && segment.endPoint != null)
         {
-            // If already attacking, just update the VFX
-            StopAllCoroutines();
-            StartCoroutine(AnimateAttack());
-            return;
+            UpdateLightningPositions(segment);
+            yield return null;
         }
 
-        isAttacking = true;
-        vfxInstance = Instantiate(vfxPrefab, tower.position, Quaternion.identity);
+        // If start or end point is destroyed, remove this segment
+        RemoveLightningSegment(segment);
+    }
 
-        pos1 = vfxInstance.transform.Find("Pos1");
-        pos2 = vfxInstance.transform.Find("Pos2");
-        pos3 = vfxInstance.transform.Find("Pos3");
-        pos4 = vfxInstance.transform.Find("Pos4");
+    private void UpdateLightningPositions(LightningSegment segment)
+    {
+        if (segment.startPoint == null || segment.endPoint == null || segment.pos4 == null) return;
 
-        pos1.position = tower.position;
-        pos4.position = tower.position;
+        segment.pos1.position = segment.startPoint.position;
+        Vector3 targetPosition = segment.endPoint.position;
 
-        Vector3 direction = (enemy.position - tower.position).normalized;
-        Vector3 perpendicular = Vector3.Cross(direction, Vector3.up).normalized;
+        // Move the lightning end position towards the target
+        segment.pos4.position = Vector3.MoveTowards(
+            segment.pos4.position,
+            targetPosition,
+            projectileSpeed * Time.deltaTime
+        );
 
-        initialPos2 = tower.position + direction * 0.33f + perpendicular * Random.Range(-pos2Randomness, pos2Randomness);
-        initialPos3 = tower.position + direction * 0.66f + perpendicular * Random.Range(-pos3Randomness, pos3Randomness);
+        // Update curve control points
+        UpdateCurveControlPoints(segment);
+    }
 
-        pos2.position = initialPos2;
-        pos3.position = initialPos3;
+    private void UpdateCurveControlPoints(LightningSegment segment)
+    {
+        Vector3 currentDirection = (segment.pos4.position - segment.pos1.position).normalized;
+        Vector3 perpendicular = Vector3.Cross(currentDirection, Vector3.up).normalized;
 
-        StartCoroutine(AnimateAttack());
+        float t = Vector3.Distance(segment.pos1.position, segment.pos4.position) /
+                  Vector3.Distance(segment.pos1.position, segment.endPoint.position);
+
+        Vector3 newPos2 = Vector3.Lerp(segment.pos1.position, segment.pos4.position, 0.33f) +
+            perpendicular * (Mathf.Sin(Time.time * pos2Speed * 2 * Mathf.PI) * pos2Randomness);
+        Vector3 newPos3 = Vector3.Lerp(segment.pos1.position, segment.pos4.position, 0.66f) +
+            perpendicular * (Mathf.Sin((Time.time + 0.5f) * pos3Speed * 2 * Mathf.PI) * pos3Randomness);
+
+        segment.pos2.position = Vector3.Lerp(segment.pos2.position, newPos2, Time.deltaTime * 5f);
+        segment.pos3.position = Vector3.Lerp(segment.pos3.position, newPos3, Time.deltaTime * 5f);
+    }
+
+    private void UpdateLightningChain()
+    {
+        List<Transform> chainTargets = new List<Transform> { tower };
+        Enemy currentEnemy = null;
+
+        // Find the first enemy in range of the tower
+        currentEnemy = enemiesInRange
+            .Where(e => Vector3.Distance(tower.position, e.transform.position) <= maxRange)
+            .OrderBy(e => Vector3.Distance(tower.position, e.transform.position))
+            .FirstOrDefault();
+
+        while (currentEnemy != null && chainTargets.Count < maxChainCount + 1)
+        {
+            chainTargets.Add(currentEnemy.transform);
+
+            // Find next enemy in chain
+            currentEnemy = enemiesInRange
+                .Where(e => !chainTargets.Contains(e.transform) &&
+                            Vector3.Distance(chainTargets.Last().position, e.transform.position) <= chainRadius)
+                .OrderBy(e => Vector3.Distance(chainTargets.Last().position, e.transform.position))
+                .FirstOrDefault();
+        }
+
+        // Update lightning segments
+        for (int i = 0; i < chainTargets.Count - 1; i++)
+        {
+            if (i >= lightningSegments.Count)
+            {
+                CreateLightningSegment(chainTargets[i], chainTargets[i + 1]);
+            }
+            else
+            {
+                lightningSegments[i].startPoint = chainTargets[i];
+                lightningSegments[i].endPoint = chainTargets[i + 1];
+            }
+        }
+
+        // Remove excess segments
+        while (lightningSegments.Count > chainTargets.Count - 1)
+        {
+            RemoveLightningSegment(lightningSegments.Last());
+        }
+    }
+
+    private void RemoveLightningSegment(LightningSegment segment)
+    {
+        lightningSegments.Remove(segment);
+        Destroy(segment.vfxObject);
     }
 
     public void StopAttack()
     {
-        isAttacking = false;
-        StopAllCoroutines();
-        if (vfxInstance != null)
+        foreach (var segment in lightningSegments)
         {
-            Destroy(vfxInstance);
+            Destroy(segment.vfxObject);
         }
-    }
-
-    private IEnumerator AnimateAttack()
-    {
-        float elapsedDistance = 0f;
-        Vector3 startPosition = pos4.position;
-
-        while (isAttacking && enemy != null)
-        {
-            float totalDistance = Vector3.Distance(startPosition, enemy.position);
-
-            // Calculate the current position based on elapsed distance
-            float t = elapsedDistance / totalDistance;
-            Vector3 currentPos = Vector3.Lerp(startPosition, enemy.position, t);
-
-            // Update pos4 position
-            pos4.position = currentPos;
-
-            // Update positions of pos2 and pos3
-            UpdateCurveControlPoints(t);
-
-            // Check if pos4 has reached the enemy
-            if (Vector3.Distance(pos4.position, enemy.position) < 0.1f)
-            {
-                // Pos4 has reached the enemy, keep it there
-                pos4.position = enemy.position;
-            }
-            else
-            {
-                // Continue moving pos4 towards the enemy
-                elapsedDistance += projectileSpeed * Time.deltaTime;
-                elapsedDistance = Mathf.Min(elapsedDistance, totalDistance);
-            }
-
-            yield return null;
-        }
-
-        // If the loop ended because the enemy is null, clean up
-        if (enemy == null)
-        {
-            StopAttack();
-        }
-    }
-
-    private void UpdateCurveControlPoints(float t)
-    {
-        if (tower == null || enemy == null) return;
-
-        Vector3 currentDirection = (enemy.position - tower.position).normalized;
-        Vector3 perpendicular = Vector3.Cross(currentDirection, Vector3.up).normalized;
-
-        // Calculate new positions for pos2 and pos3
-        Vector3 newPos2 = Vector3.Lerp(tower.position, enemy.position, 0.33f) +
-            perpendicular * (Mathf.Sin(Time.time * pos2Speed * 2 * Mathf.PI) * pos2Randomness);
-        Vector3 newPos3 = Vector3.Lerp(tower.position, enemy.position, 0.66f) +
-            perpendicular * (Mathf.Sin((Time.time + 0.5f) * pos3Speed * 2 * Mathf.PI) * pos3Randomness);
-
-        // Smoothly move pos2 and pos3
-        pos2.position = Vector3.Lerp(pos2.position, newPos2, Time.deltaTime * 5f);
-        pos3.position = Vector3.Lerp(pos3.position, newPos3, Time.deltaTime * 5f);
+        lightningSegments.Clear();
     }
 }

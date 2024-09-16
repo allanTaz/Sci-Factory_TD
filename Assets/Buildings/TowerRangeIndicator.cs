@@ -4,6 +4,7 @@ using UnityEngine;
 public class TowerRangeIndicator : MonoBehaviour
 {
     public TowerData towerData;
+    public float towerRange;
     private LineRenderer lineRenderer;
     private const int segments = 64;
 
@@ -34,13 +35,17 @@ public class TowerRangeIndicator : MonoBehaviour
 
     private void DrawRangeCircle()
     {
+        if (towerData != null)
+        {
+            towerRange = towerData.range;
+        }
         float deltaTheta = (2f * Mathf.PI) / segments;
         float theta = 0f;
 
         for (int i = 0; i <= segments; i++)
         {
-            float x = towerData.range * Mathf.Cos(theta);
-            float z = towerData.range * Mathf.Sin(theta);
+            float x = towerRange * Mathf.Cos(theta);
+            float z = towerRange * Mathf.Sin(theta);
             Vector3 pos = new Vector3(x, 0, z);
             lineRenderer.SetPosition(i, pos);
             theta += deltaTheta;

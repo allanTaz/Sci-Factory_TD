@@ -18,6 +18,7 @@ public class TowerAttackVFX : MonoBehaviour
     public float pos3Randomness = 0.7f;
 
     public Transform tower { get; set; }
+    private List<Enemy> affectedEnemies = new List<Enemy>();
     private List<Enemy> enemiesInRange = new List<Enemy>();
     private List<LightningSegment> lightningSegments = new List<LightningSegment>();
 
@@ -120,6 +121,7 @@ public class TowerAttackVFX : MonoBehaviour
     {
         List<Transform> chainTargets = new List<Transform> { tower };
         Enemy currentEnemy = null;
+        affectedEnemies.Clear();
 
         // Find the first enemy in range of the tower
         currentEnemy = enemiesInRange
@@ -130,6 +132,7 @@ public class TowerAttackVFX : MonoBehaviour
         while (currentEnemy != null && chainTargets.Count < maxChainCount + 1)
         {
             chainTargets.Add(currentEnemy.transform);
+            affectedEnemies.Add(currentEnemy);
 
             // Find next enemy in chain
             currentEnemy = enemiesInRange
@@ -160,6 +163,10 @@ public class TowerAttackVFX : MonoBehaviour
         }
     }
 
+    public List<Enemy> GetAffectedEnemies()
+    {
+        return affectedEnemies;
+    }
     private void RemoveLightningSegment(LightningSegment segment)
     {
         lightningSegments.Remove(segment);

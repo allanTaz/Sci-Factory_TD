@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class ElectricTower : MonoBehaviour
 {
-    public TowerAttackVFX attackVFX;
+    private TowerAttackVFX attackVFX;
     public float attackRange = 10f;
+    public float damagePerTick = 10f;
+    public float tickInterval = 0.5f;
+
+    private float lastTickTime;
 
     private void Start()
     {
+        attackVFX = GetComponent<TowerAttackVFX>();
         attackVFX.tower = this.transform;
         attackVFX.maxRange = attackRange;
+        lastTickTime = Time.time;
     }
 
     private void Update()
@@ -22,5 +28,21 @@ public class ElectricTower : MonoBehaviour
 
         attackVFX.UpdateEnemiesInRange(enemiesInRange);
         attackVFX.StartAttack();
+
+        // Apply damage at regular intervals
+        if (Time.time - lastTickTime >= tickInterval)
+        {
+            ApplyDamageToEnemies();
+            lastTickTime = Time.time;
+        }
+    }
+
+    private void ApplyDamageToEnemies()
+    {
+        List<Enemy> affectedEnemies = attackVFX.GetAffectedEnemies();
+        foreach (Enemy enemy in affectedEnemies)
+        {
+            enemy.TakeDamage(damagePerTick);
+        }
     }
 }

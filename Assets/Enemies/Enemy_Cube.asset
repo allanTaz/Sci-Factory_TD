@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_Cube
   m_EditorClassIdentifier: 
   enemyName: Cube
-  maxHealth: 10
+  maxHealth: 100
   moveSpeed: 1
   damageToBase: 1
   currencyValue: 10

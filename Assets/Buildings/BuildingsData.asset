@@ -58,3 +58,11 @@ MonoBehaviour:
     digOre: 0
     isBelt: 0
     scriptsToDisableDuringPlacement: []
+  - buildingPrefab: {fileID: 4880262450886121249, guid: 622bfe494f387704f9dd5f6dab86a8d3, type: 3}
+    occupiedTiles:
+    - {x: 0, y: 0}
+    specialTile: {x: -99, y: -99}
+    outputTile: {x: -99, y: -99}
+    digOre: 0
+    isBelt: 0
+    scriptsToDisableDuringPlacement: []

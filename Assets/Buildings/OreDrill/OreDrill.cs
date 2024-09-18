@@ -8,7 +8,8 @@ public class OreDrill : MonoBehaviour
     private GridGenerator gridGenerator;
     private Vector2Int gridPosition;
     private Vector2Int outputPosition;
-    public GameObject resourcePrefab;
+    private Vector2Int specialTilePosition;
+    private GameObject resourcePrefab;
     private MaterialPropertyBlock propBlock;
 
     private void OnEnable()
@@ -24,6 +25,7 @@ public class OreDrill : MonoBehaviour
 
         gridPosition = GetGridPosition();
         outputPosition = GetOutputPosition();
+        resourcePrefab = gridGenerator.oreData.GetOreInfo(gridGenerator.GetCell(GetSpecialTile()).OreType).orePrefab;
         StartCoroutine(ProduceResources());
     }
 
@@ -61,6 +63,25 @@ public class OreDrill : MonoBehaviour
             }
         }
         Debug.LogError("COULDNT FIND OUTPUT TILE");
+        return gridPosition + Vector2Int.right;
+    }
+    private Vector2Int GetSpecialTile()
+    {
+        BuildingPlacer buildingPlacer = FindObjectOfType<BuildingPlacer>();
+        if (buildingPlacer != null)
+        {
+            Building buildingData = buildingPlacer.GetSelectedBuildingData();
+            if (buildingData != null && buildingData.HasSpecialTile)
+            {
+                //float rotation = transform.rotation.eulerAngles.y;
+                Quaternion objectRotation = transform.rotation;
+                Vector3 eulerAngles = objectRotation.eulerAngles;
+                float rotation = Mathf.Round(eulerAngles.y / 90) * 90;
+                Vector2Int specialTile = RotateVector2(buildingData.specialTile, rotation);
+                return gridPosition + specialTile;
+            }
+        }
+        Debug.LogError("COULDNT FIND SPECIAL TILE");
         return gridPosition + Vector2Int.right;
     }
 

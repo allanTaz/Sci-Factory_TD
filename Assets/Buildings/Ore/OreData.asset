@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 372244d9b220ab4459a1d9dbdb45c833, type: 3}
+  m_Name: OreData
+  m_EditorClassIdentifier: 
+  ores:
+  - oreType: 0
+    oreCell: {fileID: 8750079834688375924, guid: bd14ba20144cdc54d8148b1a199477f3, type: 3}
+    orePrefab: {fileID: 1468906494691199255, guid: 1b43bb5915c58ed46af2af280daa0f17, type: 3}
+  - oreType: 1
+    oreCell: {fileID: 8750079834688375924, guid: abe1fbd0826458e4babb09f1dc388ff6, type: 3}
+    orePrefab: {fileID: 1468906494691199255, guid: a098483283c29844eacff4f3678422ab, type: 3}
+  - oreType: 2
+    oreCell: {fileID: 8750079834688375924, guid: 64774b6e08ad75c45a76fe73f22af2a4, type: 3}
+    orePrefab: {fileID: 1468906494691199255, guid: 153b7d55d99c0754299ea3a2a559090a, type: 3}
+  - oreType: 3
+    oreCell: {fileID: 0}
+    orePrefab: {fileID: 0}

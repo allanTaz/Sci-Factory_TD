@@ -3337,9 +3337,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridCellVisualPrefab: {fileID: 460487960413125586, guid: bd204c587715b5946a398c725a7fd578, type: 3}
-  oreCellVisualPrefab: {fileID: 8750079834688375924, guid: bd14ba20144cdc54d8148b1a199477f3, type: 3}
   baseCorePrefab: {fileID: 1526039266091944743, guid: c5ea1cab6ac9e1240a76b15bd981fde7, type: 3}
   enemySpawnerPrefab: {fileID: 2364471944211697976, guid: e7920d8114503c24d9c7546c2222ca5e, type: 3}
+  orePrefabMappings:
+  - oreType: 1
+    orePrefab: {fileID: 8750079834688375924, guid: bd14ba20144cdc54d8148b1a199477f3, type: 3}
+  - oreType: 2
+    orePrefab: {fileID: 8750079834688375924, guid: abe1fbd0826458e4babb09f1dc388ff6, type: 3}
+  - oreType: 3
+    orePrefab: {fileID: 8750079834688375924, guid: 64774b6e08ad75c45a76fe73f22af2a4, type: 3}
 --- !u!4 &1468556122
 Transform:
   m_ObjectHideFlags: 0
@@ -4628,59 +4634,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1804183239
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1804183241}
-  - component: {fileID: 1804183240}
-  m_Layer: 0
-  m_Name: ElecVFX
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1804183240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1804183239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e924a9eea77369943816333c06235f1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vfxPrefab: {fileID: 8193243260945813592, guid: f3b7fc9e1ca6db84fa45e94a3a8aae49, type: 3}
-  projectileSpeed: 50
-  maxChainCount: 3
-  chainRadius: 5
-  maxRange: 5
-  pos2Speed: 1
-  pos3Speed: 1.5
-  pos2Randomness: 0.5
-  pos3Randomness: 0.7
---- !u!4 &1804183241
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1804183239}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.7827296, y: 7.544888, z: -5.0045958}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1814705845
 GameObject:
   m_ObjectHideFlags: 0
@@ -5347,7 +5300,7 @@ PrefabInstance:
       objectReference: {fileID: 1646817049}
     - target: {fileID: 5929797877455590096, guid: 72231a6008d6e5c4bac06fda8a422952, type: 3}
       propertyPath: m_VersionIndex
-      value: 2779
+      value: 2785
       objectReference: {fileID: 0}
     - target: {fileID: 7054467061672300354, guid: 72231a6008d6e5c4bac06fda8a422952, type: 3}
       propertyPath: m_Name
@@ -5564,4 +5517,3 @@ SceneRoots:
   - {fileID: 1277228145}
   - {fileID: 1659097864}
   - {fileID: 974944421}
-  - {fileID: 1804183241}

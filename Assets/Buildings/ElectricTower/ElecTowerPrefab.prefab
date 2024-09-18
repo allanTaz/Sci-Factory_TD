@@ -9,15 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2246905699191441032}
-  - component: {fileID: 3091747858889566436}
+  - component: {fileID: 2922204366429294143}
   - component: {fileID: 6183187600624087747}
   - component: {fileID: 679931885315859153}
   - component: {fileID: 5951041280825713272}
   - component: {fileID: 2739541427681640530}
   - component: {fileID: 926702608032903773}
-  - component: {fileID: 2922204366429294143}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Cage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39,7 +38,7 @@ Transform:
   - {fileID: 8087165190649006565}
   m_Father: {fileID: 966431091592368500}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3091747858889566436
+--- !u!114 &2922204366429294143
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48,12 +47,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 4492620596509885682}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13a99cec8293315498bf7d5ca4ed4424, type: 3}
+  m_Script: {fileID: 11500000, guid: e924a9eea77369943816333c06235f1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 10
-  damagePerTick: 1
-  tickInterval: 0.5
+  vfxPrefab: {fileID: 8193243260945813592, guid: f3b7fc9e1ca6db84fa45e94a3a8aae49, type: 3}
+  projectileSpeed: 50
+  maxChainCount: 3
+  chainRadius: 5
+  maxRange: 5
+  pos2Speed: 1
+  pos3Speed: 1.5
+  pos2Randomness: 0.5
+  pos3Randomness: 0.7
 --- !u!114 &6183187600624087747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6961,27 +6966,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
---- !u!114 &2922204366429294143
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4492620596509885682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e924a9eea77369943816333c06235f1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vfxPrefab: {fileID: 8193243260945813592, guid: f3b7fc9e1ca6db84fa45e94a3a8aae49, type: 3}
-  projectileSpeed: 50
-  maxChainCount: 3
-  chainRadius: 5
-  maxRange: 5
-  pos2Speed: 1
-  pos3Speed: 1.5
-  pos2Randomness: 0.5
-  pos3Randomness: 0.7
 --- !u!1 &4880262450886121249
 GameObject:
   m_ObjectHideFlags: 0
@@ -6991,6 +6975,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 966431091592368500}
+  - component: {fileID: 3357287876816404504}
   - component: {fileID: 580923119697351616}
   - component: {fileID: 1832794645775752557}
   - component: {fileID: 8762143156268298086}
@@ -7019,6 +7004,21 @@ Transform:
   - {fileID: 2246905699191441032}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3357287876816404504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4880262450886121249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13a99cec8293315498bf7d5ca4ed4424, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 5
+  damagePerTick: 1
+  tickInterval: 0.5
 --- !u!33 &580923119697351616
 MeshFilter:
   m_ObjectHideFlags: 0

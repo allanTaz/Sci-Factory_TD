@@ -7874,7 +7874,7 @@ GameObject:
   - component: {fileID: 4344386384789666962}
   - component: {fileID: 6940354158747776007}
   m_Layer: 6
-  m_Name: OreCube
+  m_Name: BlueOreCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

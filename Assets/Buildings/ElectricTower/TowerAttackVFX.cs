@@ -22,6 +22,12 @@ public class TowerAttackVFX : MonoBehaviour
     private List<Enemy> enemiesInRange = new List<Enemy>();
     private List<LightningSegment> lightningSegments = new List<LightningSegment>();
 
+    private void OnDestroy()
+    {
+        foreach (var segment in lightningSegments)
+            Destroy(segment.vfxObject);
+    }
+
     private class LightningSegment
     {
         public GameObject vfxObject;

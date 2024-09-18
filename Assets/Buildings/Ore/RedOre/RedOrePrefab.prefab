@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 325000467832180121}
   - component: {fileID: 4503415509263768654}
   m_Layer: 0
-  m_Name: OrePrefab
+  m_Name: RedOrePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 051f9afb2cdc8124fa6058ec017b1ecb, type: 2}
+  - {fileID: 2100000, guid: e46e81f18d5865f4aa66b834527c5ca1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

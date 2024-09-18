@@ -30,7 +30,7 @@ public class Building
     public bool HasOutputTile => outputTile != NoTile;
 }
 
-[CreateAssetMenu(fileName = "New Buildings", menuName = "Building Data")]
+[CreateAssetMenu(fileName = "New Buildings", menuName = "Sci-Factory Data/Building Data")]
 public class BuildingData : ScriptableObject
 {
     public List<Building> buildings = new List<Building>();

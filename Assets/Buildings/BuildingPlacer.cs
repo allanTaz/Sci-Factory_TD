@@ -109,6 +109,7 @@ public class BuildingPlacer : MonoBehaviour
         }
 
         previewBuilding = Instantiate(selectedBuilding, Vector3.down * 4, selectedBuilding.transform.rotation);
+        DisableScripts(previewBuilding, selectedBuildingProps.scriptsToDisableDuringPlacement);
         if (!continuousPlacement || lastSelectedBuildingIndex != index)
         {
             currentRotation = 0f;
@@ -408,15 +409,15 @@ public class BuildingPlacer : MonoBehaviour
 
             // Find all cells occupied by this building
             List<Vector2Int> occupiedPositions = new List<Vector2Int>();
-            for (int x = 0; x < gridGenerator.MaxBounds.x; x++)
+            for (int x = gridGenerator.MinBounds.x; x <= gridGenerator.MaxBounds.x; x++)
             {
-                for (int y = 0; y < gridGenerator.MaxBounds.y; y++)
+                for (int y = gridGenerator.MinBounds.y; y <= gridGenerator.MaxBounds.y; y++)
                 {
                     Vector2Int xy = new Vector2Int(x, y);
                     GridCell checkCell = gridGenerator.GetCell(xy);
                     if (checkCell != null && checkCell.PlacedObject == buildingToDestroy)
                     {
-                        occupiedPositions.Add(new Vector2Int(x, y));
+                        occupiedPositions.Add(xy);
                     }
                 }
             }
@@ -425,15 +426,14 @@ public class BuildingPlacer : MonoBehaviour
             foreach (Vector2Int pos in occupiedPositions)
             {
                 GridCell occupiedCell = gridGenerator.GetCell(pos);
-                occupiedCell.RemoveObject();
+                if (occupiedCell != null)
+                {
+                    occupiedCell.RemoveObject();
+                }
             }
 
-            // Destroy the building GameObject
             OnBuildingDestroyed?.Invoke(buildingToDestroy);
             Destroy(buildingToDestroy);
-
-            // Optional: Trigger any post-destruction events or effects
-            //OnBuildingDestroyed(buildingToDestroy, position);
         }
     }
 }

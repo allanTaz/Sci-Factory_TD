@@ -10,6 +10,7 @@ public class ChunkExpansionSystem : MonoBehaviour
     private WFCChunkGenerator chunkGenerator;
     private HashSet<Vector2Int> existingChunkPositions = new HashSet<Vector2Int>();
     private int chunkSize;
+    private int chunkCount = 0;
 
     private void Start()
     {
@@ -30,10 +31,24 @@ public class ChunkExpansionSystem : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No valid positions for new chunks!");
+            //Debug.LogWarning("No valid positions for new chunks!");
+            TriggerExpansion();
         }
     }
-
+    private OreType GetOreTypeForChunk(int chunkNumber)
+    {
+        switch (chunkNumber % 3)
+        {
+            case 1:
+                return OreType.Blue;
+            case 2:
+                return OreType.Yellow;
+            case 0:
+                return OreType.Red;
+            default:
+                return OreType.Blue; // Fallback, shouldn't occur
+        }
+    }
     private Vector2Int GetRandomAdjacentChunkPosition()
     {
         List<Vector2Int> possiblePositions = new List<Vector2Int>();
@@ -78,7 +93,7 @@ public class ChunkExpansionSystem : MonoBehaviour
                 switch (chunkData[x, y])
                 {
                     case WFCChunkGenerator.CellType.Ore:
-                        gridGenerator.SetCellAsOre(globalGridPosition);
+                        gridGenerator.SetCellAsOre(globalGridPosition, GetOreTypeForChunk(chunkCount));
                         break;
                     case WFCChunkGenerator.CellType.EnemySpawner:
                         gridGenerator.PlaceObject(globalGridPosition, enemySpawnerPrefab);
@@ -86,7 +101,7 @@ public class ChunkExpansionSystem : MonoBehaviour
                 }
             }
         }
-
+        chunkCount++;
         existingChunkPositions.Add(chunkPosition);
     }
 }

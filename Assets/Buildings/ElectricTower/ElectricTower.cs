@@ -13,7 +13,7 @@ public class ElectricTower : MonoBehaviour
 
     private void Start()
     {
-        attackVFX = GetComponent<TowerAttackVFX>();
+        attackVFX = GetComponentInChildren<TowerAttackVFX>();
         attackVFX.tower = this.transform;
         attackVFX.maxRange = attackRange;
         lastTickTime = Time.time;

@@ -1,19 +1,19 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class GridGenerator : MonoBehaviour
 {
     [SerializeField] private GameObject gridCellVisualPrefab;
-    [SerializeField] private GameObject oreCellVisualPrefab;
     [SerializeField] private GameObject baseCorePrefab;
     [SerializeField] private GameObject enemySpawnerPrefab;
+    [SerializeField] public OreData oreData;
     private Material defaultCellMaterial;
     private GameObject enemySpawner;
     private Dictionary<Vector2Int, GridCell> grid = new Dictionary<Vector2Int, GridCell>();
     private Dictionary<Vector2Int, GameObject> visualCells = new Dictionary<Vector2Int, GameObject>();
     public Vector2Int MinBounds { get; private set; }
     public Vector2Int MaxBounds { get; private set; }
-
     private void Awake()
     {
         MinBounds = Vector2Int.zero;
@@ -61,15 +61,18 @@ public class GridGenerator : MonoBehaviour
         MaxBounds = Vector2Int.Max(MaxBounds, position);
         CreateCell(position);
     }
-
-    public void SetCellAsOre(Vector2Int position)
+    private enum OreVisuals
+    {
+        
+    }
+    public void SetCellAsOre(Vector2Int position, OreType oreType)
     {
         EnsureGridCoverage(position);
 
         GridCell cell = grid[position];
         if (cell != null && !cell.IsOre)
         {
-            cell.SetAsOre();
+            cell.SetAsOre(oreType);
 
             // Replace the visual with ore prefab
             if (visualCells.ContainsKey(position))
@@ -77,7 +80,7 @@ public class GridGenerator : MonoBehaviour
                 Destroy(visualCells[position]);
             }
             Vector3 worldPosition = GetWorldPosition(position);
-            visualCells[position] = Instantiate(oreCellVisualPrefab, worldPosition, Quaternion.identity, transform);
+            visualCells[position] = Instantiate(oreData.GetOreInfo(oreType).oreCell, worldPosition, Quaternion.identity, transform);
         }
     }
 

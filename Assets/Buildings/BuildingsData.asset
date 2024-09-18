@@ -65,4 +65,5 @@ MonoBehaviour:
     outputTile: {x: -99, y: -99}
     digOre: 0
     isBelt: 0
-    scriptsToDisableDuringPlacement: []
+    scriptsToDisableDuringPlacement:
+    - ElectricTower

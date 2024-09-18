@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Tower Data", menuName = "Tower Data")]
+[CreateAssetMenu(fileName = "New Tower Data", menuName = "Sci-Factory Data/Tower Data")]
 public class TowerData : ScriptableObject
 {
     public string towerName;

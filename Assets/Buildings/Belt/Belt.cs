@@ -11,6 +11,7 @@ public class Belt : MonoBehaviour
     private Vector2Int _gridPosition;
     private bool isPaused = false;
     private Coroutine moveItemCoroutine;
+    private bool isReserved = false;
 
     private void OnDestroy()
     {
@@ -33,7 +34,20 @@ public class Belt : MonoBehaviour
         // Use BeltManager.Instance to ensure it's created if it doesn't exist
         BeltManager.Instance.RegisterBelt(this);
     }
+    public bool TryReserve()
+    {
+        if (!isReserved && !isSpaceTaken)
+        {
+            isReserved = true;
+            return true;
+        }
+        return false;
+    }
 
+    public void CancelReservation()
+    {
+        isReserved = false;
+    }
     public void Tick()
     {
         if (beltInSequence == null)
@@ -65,7 +79,7 @@ public class Belt : MonoBehaviour
 
             var (nextBelt, nextCollectionBuilding) = FindNextDestination();
 
-            if (nextBelt != null && !nextBelt.isSpaceTaken)
+            if (nextBelt != null && nextBelt.TryReserve())
             {
                 toPosition = nextBelt.GetItemPosition();
                 beltInSequence = nextBelt;
@@ -96,6 +110,8 @@ public class Belt : MonoBehaviour
             if (currentItem == null)
             {
                 Debug.LogWarning("Item was destroyed or removed while moving on the belt.");
+                if (beltInSequence != null)
+                    beltInSequence.CancelReservation();
                 moveItemCoroutine = null;
                 yield break;
             }
@@ -107,8 +123,7 @@ public class Belt : MonoBehaviour
             }
             else if (beltInSequence != null)
             {
-                beltInSequence.isSpaceTaken = true;
-                beltInSequence.currentItem = currentItem;
+                beltInSequence.PlaceItemOnBelt(currentItem);
                 currentItem = null;
             }
             else
@@ -179,6 +194,11 @@ public class Belt : MonoBehaviour
             currentItem = item;
             item.transform.position = GetItemPosition();
             isSpaceTaken = true;
+            isReserved = false;
+        }
+        else
+        {
+            Debug.LogWarning("Attempted to place item on an occupied or reserved belt.");
         }
     }
 

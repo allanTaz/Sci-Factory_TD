@@ -3339,13 +3339,7 @@ MonoBehaviour:
   gridCellVisualPrefab: {fileID: 460487960413125586, guid: bd204c587715b5946a398c725a7fd578, type: 3}
   baseCorePrefab: {fileID: 1526039266091944743, guid: c5ea1cab6ac9e1240a76b15bd981fde7, type: 3}
   enemySpawnerPrefab: {fileID: 2364471944211697976, guid: e7920d8114503c24d9c7546c2222ca5e, type: 3}
-  orePrefabMappings:
-  - oreType: 1
-    orePrefab: {fileID: 8750079834688375924, guid: bd14ba20144cdc54d8148b1a199477f3, type: 3}
-  - oreType: 2
-    orePrefab: {fileID: 8750079834688375924, guid: abe1fbd0826458e4babb09f1dc388ff6, type: 3}
-  - oreType: 3
-    orePrefab: {fileID: 8750079834688375924, guid: 64774b6e08ad75c45a76fe73f22af2a4, type: 3}
+  oreData: {fileID: 11400000, guid: 1954999daca8e3f40a3a728241df40ff, type: 2}
 --- !u!4 &1468556122
 Transform:
   m_ObjectHideFlags: 0

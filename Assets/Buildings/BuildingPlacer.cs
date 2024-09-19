@@ -10,6 +10,7 @@ public class BuildingPlacer : MonoBehaviour
     [SerializeField] private Material outputTileMaterial;
     [SerializeField] private LayerMask gridLayer;
     [SerializeField] private BuildingData buildingData;
+    [SerializeField] private GameObject[] cantDestroy;
 
     private Building selectedBuildingProps;
     private float currentRotation = 0f;
@@ -405,8 +406,15 @@ public class BuildingPlacer : MonoBehaviour
         GridCell cell = gridGenerator.GetCell(position);
         if (cell != null && cell.IsOccupied)
         {
+            
             GameObject buildingToDestroy = cell.PlacedObject;
-
+            foreach(var building in cantDestroy)
+            {
+                if (buildingToDestroy.name.Contains(building.name))
+                {
+                    return;
+                }
+            }
             // Find all cells occupied by this building
             List<Vector2Int> occupiedPositions = new List<Vector2Int>();
             for (int x = gridGenerator.MinBounds.x; x <= gridGenerator.MaxBounds.x; x++)

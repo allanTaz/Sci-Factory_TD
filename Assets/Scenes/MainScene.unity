@@ -4788,6 +4788,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   buildingData: {fileID: 11400000, guid: 5bd2a514633cc5b47bdc3634b3cb186d, type: 2}
+  cantDestroy:
+  - {fileID: 1526039266091944743, guid: c5ea1cab6ac9e1240a76b15bd981fde7, type: 3}
+  - {fileID: 2364471944211697976, guid: e7920d8114503c24d9c7546c2222ca5e, type: 3}
 --- !u!4 &1801357364
 Transform:
   m_ObjectHideFlags: 0

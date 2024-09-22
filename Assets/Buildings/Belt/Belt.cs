@@ -27,8 +27,6 @@ public class Belt : MonoBehaviour
             Debug.LogError("GridGenerator not found in the scene. Belt might not function correctly.");
             return;
         }
-
-        _gridPosition = GetGridPosition();
         UpdateNextDestination();
 
         // Use BeltManager.Instance to ensure it's created if it doesn't exist
@@ -63,9 +61,9 @@ public class Belt : MonoBehaviour
 
     public Vector3 GetItemPosition()
     {
-        var padding = 0.3f;
+        var padding = 0.25f;
         var position = transform.position;
-        return new Vector3(position.x, position.y + padding, position.z);
+        return new Vector3(position.x, position.y+padding, position.z);
     }
 
     private IEnumerator StartBeltMove()
@@ -77,18 +75,13 @@ public class Belt : MonoBehaviour
             bool isMovingToCollectionBuilding = false;
             CollectionBuilding collectionBuilding = null;
 
-            var (nextBelt, nextCollectionBuilding) = FindNextDestination();
+            var nextBelt = FindNextDestination();
 
             if (nextBelt != null && nextBelt.TryReserve())
             {
                 toPosition = nextBelt.GetItemPosition();
+                toPosition.y = toPosition.y+(currentItem.GetComponent<Renderer>().bounds.size.y/2);
                 beltInSequence = nextBelt;
-            }
-            else if (nextCollectionBuilding != null)
-            {
-                toPosition = _gridGenerator.GetWorldPosition(nextCollectionBuilding.GetInputPosition());
-                isMovingToCollectionBuilding = true;
-                collectionBuilding = nextCollectionBuilding;
             }
             else
             {
@@ -135,56 +128,20 @@ public class Belt : MonoBehaviour
         moveItemCoroutine = null;
     }
 
-    private (Belt, CollectionBuilding) FindNextDestination()
+    private Belt FindNextDestination()
     {
-        Vector2Int direction = GetForwardDirection();
-        Vector2Int nextGridPosition = _gridPosition + direction;
-        GridCell nextCell = _gridGenerator.GetCell(nextGridPosition);
-        if (nextCell != null && nextCell.IsOccupied)
-        {
-            Belt nextBelt = nextCell.PlacedObject?.GetComponent<Belt>();
-            if (nextBelt != null)
-                return (nextBelt, null);
-
-            CollectionBuilding collectionBuilding = nextCell.PlacedObject?.GetComponent<CollectionBuilding>();
-            if (collectionBuilding != null)
-                return (null, collectionBuilding);
-        }
-        return (null, null);
+        GameObject placedObject = GridUtility.GetObjectInDirection(transform, _gridGenerator, GridUtility.GetForwardDirection(transform));
+        if (placedObject == null)
+            return null;
+        if (placedObject.GetComponent<Belt>() == null)
+            return null;
+        return placedObject.GetComponent<Belt>();
     }
 
     private void UpdateNextDestination()
     {
-        var (nextBelt, _) = FindNextDestination();
+        var nextBelt = FindNextDestination();
         beltInSequence = nextBelt;
-    }
-
-    private Vector2Int GetGridPosition()
-    {
-        Vector3 worldPosition = transform.position;
-        int x = Mathf.RoundToInt(worldPosition.x - _gridGenerator.transform.position.x);
-        int y = Mathf.RoundToInt(worldPosition.z - _gridGenerator.transform.position.z);
-        return new Vector2Int(x, y);
-    }
-
-    private Vector2Int GetForwardDirection()
-    {
-        Vector3 forward = transform.forward;
-        float angle = Vector3.SignedAngle(Vector3.forward, forward, Vector3.up);
-
-        if (angle >= -45 && angle < 45)
-            return Vector2Int.up;
-        else if (angle >= 45 && angle < 135)
-            return Vector2Int.right;
-        else if (angle >= 135 || angle < -135)
-            return Vector2Int.down;
-        else
-            return Vector2Int.left;
-    }
-
-    public void OnRotationChanged()
-    {
-        UpdateNextDestination();
     }
 
     public void PlaceItemOnBelt(GameObject item)
@@ -192,7 +149,9 @@ public class Belt : MonoBehaviour
         if (!isSpaceTaken && currentItem == null)
         {
             currentItem = item;
-            item.transform.position = GetItemPosition();
+            Vector3 Position = GetItemPosition();
+            Position.y = Position.y +(item.GetComponent<Renderer>().bounds.size.y/2);
+            item.transform.position = Position;
             isSpaceTaken = true;
             isReserved = false;
         }

@@ -67,3 +67,12 @@ MonoBehaviour:
     isBelt: 0
     scriptsToDisableDuringPlacement:
     - ElectricTower
+  - buildingPrefab: {fileID: 1888646503978248433, guid: 083c85869ef939a41ac53b1417a18a89, type: 3}
+    occupiedTiles:
+    - {x: 0, y: 0}
+    specialTile: {x: -99, y: -99}
+    outputTile: {x: -99, y: -99}
+    digOre: 0
+    isBelt: 0
+    scriptsToDisableDuringPlacement:
+    - StampingModule

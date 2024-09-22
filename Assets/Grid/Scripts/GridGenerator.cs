@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 
 public class GridGenerator : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private GameObject baseCorePrefab;
     [SerializeField] private GameObject enemySpawnerPrefab;
     [SerializeField] public OreData oreData;
+    [SerializeField] private float cellAnimationDuration = 0.5f;
+    [SerializeField] private Ease cellAnimationEase = Ease.OutBack;
     private Material defaultCellMaterial;
     private GameObject enemySpawner;
     private Dictionary<Vector2Int, GridCell> grid = new Dictionary<Vector2Int, GridCell>();
@@ -42,6 +45,7 @@ public class GridGenerator : MonoBehaviour
 
             Vector3 worldPosition = GetWorldPosition(position);
             GameObject cellVisual = Instantiate(gridCellVisualPrefab, worldPosition, Quaternion.identity, transform);
+            cellVisual.transform.localScale = Vector3.zero;
             visualCells[position] = cellVisual;
 
             if (defaultCellMaterial == null)
@@ -52,6 +56,13 @@ public class GridGenerator : MonoBehaviour
                     defaultCellMaterial = renderer.material;
                 }
             }
+
+            // Animate the cell scaling
+            cellVisual.transform.DOScale(Vector3.one, cellAnimationDuration)
+                .SetEase(cellAnimationEase)
+                .OnComplete(() => {
+                    // You can add any post-animation logic here if needed
+                });
         }
     }
 

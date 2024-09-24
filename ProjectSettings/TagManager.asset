@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Core
   - EnemySpawn
+  - Enemy
   layers:
   - Default
   - TransparentFX

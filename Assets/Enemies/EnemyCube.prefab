@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -4038210012489335120}
   m_Layer: 0
   m_Name: EnemyCube
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,7 +100,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -119,4 +119,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyData: {fileID: 11400000, guid: c6fd47248aa85e7498938fe32d3ce320, type: 2}
+  pathfinder: {fileID: 0}
   healthBarPrefab: {fileID: 2891993065117455483, guid: 4c2f751a4bef2554595b0014a4916ed8, type: 3}

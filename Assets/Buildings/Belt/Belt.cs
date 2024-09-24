@@ -16,6 +16,10 @@ public class Belt : MonoBehaviour
     private void OnDestroy()
     {
         Destroy(currentItem);
+        if (beltInSequence != null)
+        {
+            beltInSequence.CancelReservation();
+        }
         BeltManager.Instance.UnregisterBelt(this);
     }
 
@@ -27,7 +31,7 @@ public class Belt : MonoBehaviour
             Debug.LogError("GridGenerator not found in the scene. Belt might not function correctly.");
             return;
         }
-        UpdateNextDestination();
+        beltInSequence = FindNextDestination();
 
         // Use BeltManager.Instance to ensure it's created if it doesn't exist
         BeltManager.Instance.RegisterBelt(this);
@@ -49,7 +53,7 @@ public class Belt : MonoBehaviour
     public void Tick()
     {
         if (beltInSequence == null)
-            UpdateNextDestination();
+            beltInSequence = FindNextDestination();
         if (currentItem != null && !isPaused)
         {
             if (moveItemCoroutine == null)
@@ -72,8 +76,6 @@ public class Belt : MonoBehaviour
         if (currentItem != null)
         {
             Vector3 toPosition;
-            bool isMovingToCollectionBuilding = false;
-            CollectionBuilding collectionBuilding = null;
 
             var nextBelt = FindNextDestination();
 
@@ -108,12 +110,6 @@ public class Belt : MonoBehaviour
                 moveItemCoroutine = null;
                 yield break;
             }
-
-            if (isMovingToCollectionBuilding && collectionBuilding != null)
-            {
-                collectionBuilding.CollectResource(currentItem);
-                currentItem = null;
-            }
             else if (beltInSequence != null)
             {
                 beltInSequence.PlaceItemOnBelt(currentItem);
@@ -136,12 +132,6 @@ public class Belt : MonoBehaviour
         if (placedObject.GetComponent<Belt>() == null)
             return null;
         return placedObject.GetComponent<Belt>();
-    }
-
-    private void UpdateNextDestination()
-    {
-        var nextBelt = FindNextDestination();
-        beltInSequence = nextBelt;
     }
 
     public void PlaceItemOnBelt(GameObject item)

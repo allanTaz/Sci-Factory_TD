@@ -1,14 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 public class CurrencyDisplay : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI currencyText;
-
+    [SerializeField] private TextMeshProUGUI blueCurrencyText;
+    [SerializeField] private TextMeshProUGUI YellowCurrencyText;
+    [SerializeField] private TextMeshProUGUI redCurrencyText;
+    private Dictionary<string, TextMeshProUGUI> currencyTexts = new Dictionary<string, TextMeshProUGUI>();
     private void Start()
     {
-        UpdateCurrencyDisplay();
+        currencyTexts = new Dictionary<string, TextMeshProUGUI> {
+        {"Blue", blueCurrencyText},
+        {"Yellow", YellowCurrencyText },
+        {"Red", redCurrencyText }
+    
+        };
+    
+    
     }
 
     private void OnEnable()
@@ -21,11 +31,11 @@ public class CurrencyDisplay : MonoBehaviour
         CurrencyManager.OnCurrencyChanged -= UpdateCurrencyDisplay;
     }
 
-    private void UpdateCurrencyDisplay()
+    private void UpdateCurrencyDisplay(string currencyType)
     {
-        if (currencyText != null)
+        if (currencyTexts[currencyType] != null)
         {
-            currencyText.text = CurrencyManager.Instance.GetCurrency().ToString();
+            currencyTexts[currencyType].text = CurrencyManager.Instance.GetCurrency(currencyType).ToString();
         }
     }
 }

@@ -1,7 +1,28 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class GridUtility
 {
+
+    public static bool IsObjectFacing(Transform facingObject, Transform targetObject, float angleThreshold = 45f)
+    {
+        Vector3 directionToTarget = (targetObject.position - facingObject.position).normalized;
+
+        float angle = Vector3.Angle(facingObject.forward, directionToTarget);
+
+        return angle <= angleThreshold;
+    }
+    public static GameObject[] GetAdjacentObjects(Transform transform, GridGenerator gridGenerator)
+    {
+        GameObject[] adjacentObjects = new GameObject[4];
+
+        adjacentObjects[0] = GetObjectInDirection(transform, gridGenerator, Vector2Int.up);
+        adjacentObjects[1] = GetObjectInDirection(transform, gridGenerator, Vector2Int.left);
+        adjacentObjects[2] = GetObjectInDirection(transform, gridGenerator, Vector2Int.right);
+        adjacentObjects[3] = GetObjectInDirection(transform, gridGenerator, Vector2Int.down);
+
+        return adjacentObjects;
+    }
 
     public static GridCell GetCellInDirection(Transform transform, GridGenerator gridGenerator, Vector2Int direction)
     {

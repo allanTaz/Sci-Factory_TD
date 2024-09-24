@@ -5,6 +5,16 @@ public class CollectionBuilding : MonoBehaviour
     private GridGenerator gridGenerator;
     private Vector2Int gridPosition;
 
+    [System.Serializable]
+    public class ResourceCurrencyMapping
+    {
+        public GameObject resourcePrefab;
+        public string currencyType;
+        public int currencyAmount = 1;
+    }
+
+    public ResourceCurrencyMapping[] resourceMappings;
+
     private void Start()
     {
         gridGenerator = FindObjectOfType<GridGenerator>();
@@ -27,11 +37,17 @@ public class CollectionBuilding : MonoBehaviour
 
     public void CollectResource(GameObject resource)
     {
-        // Add to player's currency
-        CurrencyManager.Instance.AddCurrency(1);
+        foreach (var mapping in resourceMappings)
+        {
+            if (mapping.resourcePrefab == resource)
+            {
+                CurrencyManager.Instance.AddCurrency(mapping.currencyType, mapping.currencyAmount);
+                Destroy(resource);
+                return;
+            }
+        }
 
-        // Destroy the resource object
-        Destroy(resource);
+        Debug.LogWarning($"No currency mapping found for resource: {resource.name}");
     }
 
     public Vector2Int GetInputPosition()

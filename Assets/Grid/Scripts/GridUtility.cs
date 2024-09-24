@@ -3,6 +3,14 @@ using UnityEngine;
 public static class GridUtility
 {
 
+    public static GridCell GetCellInDirection(Transform transform, GridGenerator gridGenerator, Vector2Int direction)
+    {
+        Vector2Int currentGridPosition = WorldToGridPosition(transform.position, gridGenerator.transform);
+        Vector2Int targetGridPosition = currentGridPosition + direction;
+
+        return gridGenerator.GetCell(targetGridPosition);
+    }
+
     public static GameObject GetObjectInDirection(Transform transform, GridGenerator gridGenerator, Vector2Int direction)
     {
         Vector2Int currentGridPosition = WorldToGridPosition(transform.position, gridGenerator.transform);

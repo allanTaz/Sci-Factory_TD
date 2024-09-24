@@ -1,21 +1,18 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager Instance { get; private set; }
-    public delegate void CurrencyChangedHandler();
+    public delegate void CurrencyChangedHandler(string currencyType);
     public static event CurrencyChangedHandler OnCurrencyChanged;
 
-    private int _currency = 0;
-    public int Currency
+    private Dictionary<string, int> currencies = new Dictionary<string, int>
     {
-        get { return _currency; }
-        private set
-        {
-            _currency = value;
-            OnCurrencyChanged?.Invoke();
-        }
-    }
+        { "Blue", 0 },
+        { "Yellow", 0 },
+        { "Red", 0 }
+    };
 
     private void Awake()
     {
@@ -30,27 +27,46 @@ public class CurrencyManager : MonoBehaviour
         }
     }
 
-    public void AddCurrency(int amount)
+    public void AddCurrency(string currencyType, int amount)
     {
-        Currency += amount;
-        Debug.Log($"Currency added. New total: {Currency}");
-    }
-    public bool RemoveCurrency(int amount)
-    {
-        if (Currency >= amount)
+        if (currencies.ContainsKey(currencyType))
         {
-            Currency -= amount;
-            Debug.Log($"Currency removed. New total: {Currency}");
+            currencies[currencyType] += amount;
+            OnCurrencyChanged?.Invoke(currencyType);
+            Debug.Log($"{currencyType} currency added. New total: {currencies[currencyType]}");
+        }
+        else
+        {
+            Debug.LogError($"Invalid currency type: {currencyType}");
+        }
+    }
+
+    public bool RemoveCurrency(string currencyType, int amount)
+    {
+        if (currencies.ContainsKey(currencyType) && currencies[currencyType] >= amount)
+        {
+            currencies[currencyType] -= amount;
+            OnCurrencyChanged?.Invoke(currencyType);
+            Debug.Log($"{currencyType} currency removed. New total: {currencies[currencyType]}");
             return true;
         }
         else
         {
-            Debug.Log($"Not enough currency. Current total: {Currency}");
+            Debug.Log($"Not enough {currencyType} currency. Current total: {currencies[currencyType]}");
             return false;
         }
     }
-    public int GetCurrency()
+
+    public int GetCurrency(string currencyType)
     {
-        return Currency;
+        if (currencies.ContainsKey(currencyType))
+        {
+            return currencies[currencyType];
+        }
+        else
+        {
+            Debug.LogError($"Invalid currency type: {currencyType}");
+            return 0;
+        }
     }
 }

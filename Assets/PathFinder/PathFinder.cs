@@ -148,7 +148,7 @@ public class Pathfinder : MonoBehaviour
         {
             return false;
         }
-        if (cell.IsOccupied)
+        if (!cell.IsWalkable)
         {
             // Allow walking through start and end objects
             if (cell.PlacedObject == startObject || cell.PlacedObject == endObject)

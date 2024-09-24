@@ -76,3 +76,12 @@ MonoBehaviour:
     isBelt: 0
     scriptsToDisableDuringPlacement:
     - StampingModule
+  - buildingPrefab: {fileID: 8473101425702675886, guid: cf6763608a6a9bf429b1b6f28e72d78f, type: 3}
+    occupiedTiles:
+    - {x: 0, y: 0}
+    specialTile: {x: -99, y: -99}
+    outputTile: {x: -99, y: -99}
+    digOre: 0
+    isBelt: 0
+    scriptsToDisableDuringPlacement:
+    - ObjectPlacer

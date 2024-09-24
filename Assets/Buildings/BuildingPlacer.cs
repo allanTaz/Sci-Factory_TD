@@ -320,6 +320,7 @@ public class BuildingPlacer : MonoBehaviour
                         // Reset the preview for the next placement, maintaining rotation
                         Destroy(previewBuilding);
                         previewBuilding = Instantiate(selectedBuilding, Vector3.down*3, Quaternion.Euler(0f, currentRotation, 0f));
+                        DisableScripts(previewBuilding, selectedBuildingProps.scriptsToDisableDuringPlacement);
                         if (rangeIndicator != null)
                         {
                             rangeIndicator = previewBuilding.GetComponent<TowerRangeIndicator>();

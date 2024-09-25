@@ -50,16 +50,15 @@ public class WFCChunkGenerator
 
     private void PlaceCell(CellType cellType)
     {
-        while (true)
-        {
-            int x = Random.Range(0, CHUNK_SIZE);
-            int y = Random.Range(0, CHUNK_SIZE);
+        int x = Random.Range(1, CHUNK_SIZE-1);
+        int y = Random.Range(1, CHUNK_SIZE-1);
 
-            if (grid[x, y] == CellType.Empty)
-            {
-                grid[x, y] = cellType;
-                break;
-            }
+        if (grid[x, y] == CellType.Empty)
+        {
+            grid[x, y] = cellType;
+        }
+        else {
+            PlaceCell(cellType);
         }
     }
 

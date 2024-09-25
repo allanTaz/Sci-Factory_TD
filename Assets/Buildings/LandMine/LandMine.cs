@@ -10,16 +10,18 @@ public class LandMine : MonoBehaviour
     public float damage = 1f;
     public MeshRenderer MeshRenderer;
     private bool mineEnabled = false;
+    private GridCell gridCell;
 
-    public void PlaceMine()
+    public void PlaceMine(GridCell cell)
     {
+        gridCell = cell;
         mineEnabled = true;
         MeshRenderer.enabled = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(tagToDetect))
+        if (other.CompareTag(tagToDetect) && mineEnabled)
         {
             Explode();
         }
@@ -43,6 +45,7 @@ public class LandMine : MonoBehaviour
     }
     public void Explode()
     {
+        gridCell.RemoveObject();
         DamageEnemiesInRadius();
         if (explosionEffect != null)
         {

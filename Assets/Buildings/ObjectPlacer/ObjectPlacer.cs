@@ -72,7 +72,7 @@ public class ObjectPlacer : MonoBehaviour
                     beltFront.currentItem = null;
                     beltFront.isSpaceTaken = false;
                     yield return StartCoroutine(PlaceObjectAnimation());
-                    pickupObject.GetComponent<LandMine>().PlaceMine();
+                    pickupObject.GetComponent<LandMine>().PlaceMine(cellBehind);
                     cellBehind.PlaceWalkableObject(pickupObject);
                     pickupObject = null;
                     beltFront.ResumeBelt();

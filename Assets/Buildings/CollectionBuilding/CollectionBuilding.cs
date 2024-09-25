@@ -11,10 +11,10 @@ public class CollectionBuilding : MonoBehaviour
     private List<Belt> adjacentBelts;
     private VortexAnimation vortexAnimation;
 
-    private Dictionary<string, string> currencyMappings = new Dictionary<string, string> {
-        { "BlueOrePrefab", "Blue" },
-        { "YellowOrePrefab", "Yellow" },
-        { "RedOrePrefab", "Red" } 
+    private Dictionary<string, CurrencyType> currencyMappings = new Dictionary<string, CurrencyType> {
+        { "BlueOrePrefab", CurrencyType.Blue },
+        { "YellowOrePrefab", CurrencyType.Yellow },
+        { "RedOrePrefab", CurrencyType.Red } 
     };
     private void Start()
     {
@@ -29,14 +29,14 @@ public class CollectionBuilding : MonoBehaviour
         StartCoroutine(CollectItems());
     }
 
-    private string GetCurrencyTypeForItem(string itemName)
+    private CurrencyType GetCurrencyTypeForItem(string itemName)
     {
         var matchingPair = currencyMappings.FirstOrDefault(x => itemName.Contains(x.Key));
         if (!matchingPair.Equals(default(KeyValuePair<string, string>)))
         {
             return matchingPair.Value;
         }
-        return null;
+        return CurrencyType.Blue;
     }
     private IEnumerator CollectItems()
     {
@@ -45,18 +45,10 @@ public class CollectionBuilding : MonoBehaviour
             adjacentBelts.RemoveAll(item => item == null || !item);
             foreach (var belt in adjacentBelts) {
                 if (belt.isSpaceTaken) {
-                    string currencyType = GetCurrencyTypeForItem(belt.currentItem.name);
-                    if (currencyType != null)
-                    {
-                        CurrencyManager.Instance.AddCurrency(currencyType, 1);
-                        vortexAnimation.StartVortexAnimation(belt.currentItem.transform);
-                        belt.currentItem = null;
-                        belt.isSpaceTaken = false;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"No currency mapping found for item: {belt.currentItem.name}");
-                    }
+                    CurrencyType currencyType = GetCurrencyTypeForItem(belt.currentItem.name);
+                    vortexAnimation.StartVortexAnimation(belt.currentItem.transform, currencyType);
+                    belt.currentItem = null;
+                    belt.isSpaceTaken = false;
                 }
             }
             yield return new WaitForSeconds(inputDelay);

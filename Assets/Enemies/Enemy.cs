@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
@@ -159,6 +158,8 @@ public class Enemy : MonoBehaviour
     {
         // This ensures that even if the enemy is destroyed by other means (e.g., reaching the end of the path),
         // the EnemySpawner will still be notified.
+        if(healthBarRectTransform!=null)
+            Destroy(healthBarRectTransform.gameObject);
         OnDestroyed?.Invoke(this);
     }
 

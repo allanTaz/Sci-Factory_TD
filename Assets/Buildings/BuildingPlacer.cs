@@ -29,6 +29,20 @@ public class BuildingPlacer : MonoBehaviour
     private bool continuousPlacement = false;
     private int lastSelectedBuildingIndex = -1;
 
+    private void Awake()
+    {
+        InitializeBuildingData();
+    }
+    void InitializeBuildingData()
+    {
+        if (buildingData == null)
+        {
+            Debug.LogError("BuildingData is not assigned in the inspector!");
+            return;
+        }
+
+        buildingData = buildingData.DeepCopy();
+    }
     void Update()
     {
         if (isPlacing)
@@ -245,6 +259,17 @@ public class BuildingPlacer : MonoBehaviour
 
     bool CanPlaceBuilding(Vector2Int gridPosition)
     {
+        if (selectedBuildingProps.singleInstance && selectedBuildingProps.instanceCount > 0)
+        {
+            return false;
+        }
+        foreach (var currency in selectedBuildingProps.Price)
+        {
+            if (CurrencyManager.Instance.GetCurrency(currency.Key) < currency.Value)
+            {
+                return false;
+            }
+        }
         foreach (Vector2Int offset in rotatedOccupiedTiles)
         {
             Vector2Int checkPosition = gridPosition + offset;
@@ -290,10 +315,14 @@ public class BuildingPlacer : MonoBehaviour
 
             if (CanPlaceBuilding(gridPosition))
             {
+                foreach (var currency in selectedBuildingProps.Price)
+                {
+                    CurrencyManager.Instance.RemoveCurrency(currency.Key, currency.Value);
+                }
                 GameObject placedBuilding = gridGenerator.PlaceObject(gridPosition, selectedBuilding, previewBuilding.transform);
-
                 if (placedBuilding != null)
                 {
+                    selectedBuildingProps.instanceCount++;
                     foreach (Vector2Int offset in rotatedOccupiedTiles)
                     {
                         Vector2Int occupyPosition = gridPosition + offset;
@@ -390,7 +419,17 @@ public class BuildingPlacer : MonoBehaviour
     {
         return selectedBuildingProps;
     }
-
+    private Building GetBuildingPropsFromObject(GameObject gameObject)
+    {
+        foreach(var building in buildingData.buildings)
+        {
+            if (gameObject.name.Contains(building.buildingPrefab.name))
+            {
+                return building;
+            }
+        }
+        return null;
+    }
     private void DestroyBuildingAtMousePosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -415,6 +454,14 @@ public class BuildingPlacer : MonoBehaviour
                 {
                     return;
                 }
+            }
+            Building buildingData = GetBuildingPropsFromObject(buildingToDestroy);
+            if (buildingData != null) {
+                foreach (var currency in buildingData.Price)
+                {
+                    CurrencyManager.Instance.AddCurrency(currency.Key, currency.Value);
+                }
+                buildingData.instanceCount--;
             }
             // Find all cells occupied by this building
             List<Vector2Int> occupiedPositions = new List<Vector2Int>();

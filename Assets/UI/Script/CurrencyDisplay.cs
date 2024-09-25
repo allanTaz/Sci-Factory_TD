@@ -5,19 +5,19 @@ using System.Collections.Generic;
 
 public class CurrencyDisplay : MonoBehaviour
 {
+    [SerializeField] private int initialCurrency = 5;
     [SerializeField] private TextMeshProUGUI blueCurrencyText;
     [SerializeField] private TextMeshProUGUI YellowCurrencyText;
     [SerializeField] private TextMeshProUGUI redCurrencyText;
-    private Dictionary<string, TextMeshProUGUI> currencyTexts = new Dictionary<string, TextMeshProUGUI>();
+    private Dictionary<CurrencyType, TextMeshProUGUI> currencyTexts = new Dictionary<CurrencyType, TextMeshProUGUI>();
     private void Start()
     {
-        currencyTexts = new Dictionary<string, TextMeshProUGUI> {
-        {"Blue", blueCurrencyText},
-        {"Yellow", YellowCurrencyText },
-        {"Red", redCurrencyText }
-    
+        currencyTexts = new Dictionary<CurrencyType, TextMeshProUGUI> {
+        {CurrencyType.Blue, blueCurrencyText},
+        {CurrencyType.Yellow, YellowCurrencyText },
+        {CurrencyType.Red, redCurrencyText }
         };
-    
+        CurrencyManager.Instance.AddCurrency(CurrencyType.Blue, initialCurrency);
     
     }
 
@@ -31,7 +31,7 @@ public class CurrencyDisplay : MonoBehaviour
         CurrencyManager.OnCurrencyChanged -= UpdateCurrencyDisplay;
     }
 
-    private void UpdateCurrencyDisplay(string currencyType)
+    private void UpdateCurrencyDisplay(CurrencyType currencyType)
     {
         if (currencyTexts[currencyType] != null)
         {

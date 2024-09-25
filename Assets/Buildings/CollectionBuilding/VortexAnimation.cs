@@ -12,7 +12,7 @@ public class VortexAnimation : MonoBehaviour
 
 
 
-    public void StartVortexAnimation(Transform objectToAnimate)
+    public void StartVortexAnimation(Transform objectToAnimate, CurrencyType currencyType)
     {
         Vector3 startPosition = objectToAnimate.position;
         Vector3 endPosition = vortexCenter.position;
@@ -26,7 +26,9 @@ public class VortexAnimation : MonoBehaviour
 
         sequence.OnComplete(() =>
         {
+            CurrencyManager.Instance.AddCurrency(currencyType, 1);
             Destroy(objectToAnimate.gameObject);
+
         });
         // Start the animation
         sequence.Play();

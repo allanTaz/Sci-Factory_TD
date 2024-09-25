@@ -1,17 +1,23 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public enum CurrencyType
+{
+    Blue,
+    Yellow,
+    Red
+}
 public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager Instance { get; private set; }
-    public delegate void CurrencyChangedHandler(string currencyType);
+    public delegate void CurrencyChangedHandler(CurrencyType currencyType);
     public static event CurrencyChangedHandler OnCurrencyChanged;
 
-    private Dictionary<string, int> currencies = new Dictionary<string, int>
+    private Dictionary<CurrencyType, int> currencies = new Dictionary<CurrencyType, int>
     {
-        { "Blue", 0 },
-        { "Yellow", 0 },
-        { "Red", 0 }
+        { CurrencyType.Blue, 0 },
+        { CurrencyType.Yellow, 0 },
+        { CurrencyType.Red, 0 }
     };
 
     private void Awake()
@@ -27,7 +33,7 @@ public class CurrencyManager : MonoBehaviour
         }
     }
 
-    public void AddCurrency(string currencyType, int amount)
+    public void AddCurrency(CurrencyType currencyType, int amount)
     {
         if (currencies.ContainsKey(currencyType))
         {
@@ -41,7 +47,7 @@ public class CurrencyManager : MonoBehaviour
         }
     }
 
-    public bool RemoveCurrency(string currencyType, int amount)
+    public bool RemoveCurrency(CurrencyType currencyType, int amount)
     {
         if (currencies.ContainsKey(currencyType) && currencies[currencyType] >= amount)
         {
@@ -57,7 +63,7 @@ public class CurrencyManager : MonoBehaviour
         }
     }
 
-    public int GetCurrency(string currencyType)
+    public int GetCurrency(CurrencyType currencyType)
     {
         if (currencies.ContainsKey(currencyType))
         {

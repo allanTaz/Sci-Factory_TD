@@ -21,6 +21,11 @@ MonoBehaviour:
     digOre: 0
     isBelt: 0
     scriptsToDisableDuringPlacement: []
+    singleInstance: 0
+    instanceCount: 18
+    priceList:
+    - currencyType: 0
+      amount: 1
   - buildingPrefab: {fileID: 2614148051618830049, guid: a21ba77d318922841b3c2e4c8c599b2a, type: 3}
     occupiedTiles:
     - {x: 0, y: 0}
@@ -30,6 +35,11 @@ MonoBehaviour:
     isBelt: 0
     scriptsToDisableDuringPlacement:
     - TowerBehavior
+    singleInstance: 0
+    instanceCount: 20
+    priceList:
+    - currencyType: 0
+      amount: 3
   - buildingPrefab: {fileID: 2487231526416213005, guid: 4840bdde1620d9a40968eee00eb6fafc, type: 3}
     occupiedTiles:
     - {x: 0, y: 0}
@@ -39,6 +49,11 @@ MonoBehaviour:
     isBelt: 1
     scriptsToDisableDuringPlacement:
     - Belt
+    singleInstance: 0
+    instanceCount: 1
+    priceList:
+    - currencyType: 0
+      amount: 2
   - buildingPrefab: {fileID: 2143354584567475730, guid: a57abd08ecdc5174b9b486c268d650d6, type: 3}
     occupiedTiles:
     - {x: -1, y: 0}
@@ -50,6 +65,9 @@ MonoBehaviour:
     isBelt: 0
     scriptsToDisableDuringPlacement:
     - OreDrill
+    singleInstance: 0
+    instanceCount: 1
+    priceList: []
   - buildingPrefab: {fileID: 8714729259238800332, guid: 03020e5b968559a4aa7971fa1a8a3a79, type: 3}
     occupiedTiles:
     - {x: 0, y: 0}
@@ -59,6 +77,9 @@ MonoBehaviour:
     isBelt: 0
     scriptsToDisableDuringPlacement:
     - CollectionBuilding
+    singleInstance: 1
+    instanceCount: 0
+    priceList: []
   - buildingPrefab: {fileID: 4880262450886121249, guid: 622bfe494f387704f9dd5f6dab86a8d3, type: 3}
     occupiedTiles:
     - {x: 0, y: 0}
@@ -68,6 +89,11 @@ MonoBehaviour:
     isBelt: 0
     scriptsToDisableDuringPlacement:
     - ElectricTower
+    singleInstance: 0
+    instanceCount: 0
+    priceList:
+    - currencyType: 1
+      amount: 10
   - buildingPrefab: {fileID: 1888646503978248433, guid: 083c85869ef939a41ac53b1417a18a89, type: 3}
     occupiedTiles:
     - {x: 0, y: 0}
@@ -77,6 +103,13 @@ MonoBehaviour:
     isBelt: 0
     scriptsToDisableDuringPlacement:
     - StampingModule
+    singleInstance: 0
+    instanceCount: 0
+    priceList:
+    - currencyType: 0
+      amount: 5
+    - currencyType: 1
+      amount: 5
   - buildingPrefab: {fileID: 8473101425702675886, guid: cf6763608a6a9bf429b1b6f28e72d78f, type: 3}
     occupiedTiles:
     - {x: 0, y: 0}
@@ -86,3 +119,10 @@ MonoBehaviour:
     isBelt: 0
     scriptsToDisableDuringPlacement:
     - ObjectPlacer
+    singleInstance: 0
+    instanceCount: 0
+    priceList:
+    - currencyType: 1
+      amount: 5
+    - currencyType: 2
+      amount: 5

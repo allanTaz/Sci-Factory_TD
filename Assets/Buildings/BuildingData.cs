@@ -41,7 +41,7 @@ public class Building
             return priceDict;
         }
     }
-    public Building(GameObject prefab, List<Vector2Int> tiles, List<CurrencyAmount> buildingPrice, Vector2Int? output = null, bool isSingleInstance = false, Vector2Int? special = null, bool dig = false, bool belt = false, List<string> scripts = null, List<string> scriptsToDisable = null)
+    public Building(GameObject prefab, List<Vector2Int> tiles, List<CurrencyAmount> buildingPrice, Vector2Int? output = null, bool isSingleInstance = false, Vector2Int? special = null, bool dig = false, bool belt = false, List<string> scriptsToDisable = null)
     {
         buildingPrefab = prefab;
         occupiedTiles = new List<Vector2Int>(tiles);
@@ -51,7 +51,7 @@ public class Building
         specialTile = special ?? NoTile;
         digOre = dig;
         isBelt = belt;
-        scriptsToDisableDuringPlacement = scriptsToDisable ?? new List<string>();
+        scriptsToDisableDuringPlacement = new List<string>(scriptsToDisable);
     }
 
 

@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d797d7b18fd3ed64191196b82648f785, type: 3}
   m_Name: Wave1
   m_EditorClassIdentifier: 
-  waves:
-  - enemies:
-    - enemyData: {fileID: 11400000, guid: c6fd47248aa85e7498938fe32d3ce320, type: 2}
-      count: 5
-    timeBetweenSpawns: 4
-    timeBeforeNextWave: 0
+  possibleEnemies:
+  - enemyData: {fileID: 11400000, guid: c6fd47248aa85e7498938fe32d3ce320, type: 2}
+    spawnWeight: 1
+  baseEnemyCount: 5
+  enemyCountIncreasePerWave: 0
+  minTimeBetweenSpawns: 1
+  maxTimeBetweenSpawns: 2
+  minTimeBeforeNextWave: 5
+  maxTimeBeforeNextWave: 15

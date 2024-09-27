@@ -105,7 +105,7 @@ public class Enemy : MonoBehaviour
 
     void ReachedDestination()
     {
-        Debug.Log($"{enemyData.enemyName} reached the destination and dealt {enemyData.damageToBase} damage!");
+        //Debug.Log($"{enemyData.enemyName} reached the destination and dealt {enemyData.damageToBase} damage!");
         // Here you would implement logic to damage the player's base
         Destroy(gameObject);
     }
@@ -148,16 +148,16 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        Debug.Log($"{enemyData.enemyName} defeated! Player gains {enemyData.currencyValue} currency.");
+        //Debug.Log($"{enemyData.enemyName} defeated! Player gains {enemyData.currencyValue} currency.");
         // Here you would implement logic to give the player currency
         OnDestroyed?.Invoke(this);
-        Destroy(healthBarRectTransform.gameObject);
-        Destroy(gameObject);
+        if (healthBarRectTransform!=null)
+            Destroy(healthBarRectTransform.gameObject);
+        if(gameObject != null)
+            Destroy(gameObject);
     }
     void OnDestroy()
     {
-        // This ensures that even if the enemy is destroyed by other means (e.g., reaching the end of the path),
-        // the EnemySpawner will still be notified.
         if(healthBarRectTransform!=null)
             Destroy(healthBarRectTransform.gameObject);
         OnDestroyed?.Invoke(this);

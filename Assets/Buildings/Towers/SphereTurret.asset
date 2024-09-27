@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SphereTurret
   m_EditorClassIdentifier: 
   towerName: 
-  damage: 1
+  damage: 10
   fireRate: 1
   range: 2
   cost: 5

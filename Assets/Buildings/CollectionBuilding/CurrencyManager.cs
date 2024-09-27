@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public enum CurrencyType
 {
@@ -26,20 +27,37 @@ public class CurrencyManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
             Destroy(gameObject);
         }
     }
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
 
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ResetAllCurrencies();
+    }
+
+    public void ResetAllCurrencies()
+    {
+        foreach (CurrencyType currencyType in System.Enum.GetValues(typeof(CurrencyType)))
+        {
+            currencies[currencyType] = 0;
+            OnCurrencyChanged?.Invoke(currencyType);
+        }
+    }
     public void AddCurrency(CurrencyType currencyType, int amount)
     {
         if (currencies.ContainsKey(currencyType))
         {
             currencies[currencyType] += amount;
-            OnCurrencyChanged?.Invoke(currencyType);
-            Debug.Log($"{currencyType} currency added. New total: {currencies[currencyType]}");
+            OnCurrencyChanged?.Invoke(currencyType);    
         }
         else
         {
@@ -53,7 +71,6 @@ public class CurrencyManager : MonoBehaviour
         {
             currencies[currencyType] -= amount;
             OnCurrencyChanged?.Invoke(currencyType);
-            Debug.Log($"{currencyType} currency removed. New total: {currencies[currencyType]}");
             return true;
         }
         else

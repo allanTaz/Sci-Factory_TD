@@ -117,7 +117,6 @@ public class BuildingPlacer : MonoBehaviour
 
         selectedBuildingProps = buildingData.buildings[index];
         selectedBuilding = selectedBuildingProps.buildingPrefab;
-
         if (previewBuilding != null)
         {
             Destroy(previewBuilding);
@@ -384,7 +383,7 @@ public class BuildingPlacer : MonoBehaviour
             }
         }
     }
-    private void CancelPlacement()
+    public void CancelPlacement()
     {
         isPlacing = false;
         if (previewBuilding != null)

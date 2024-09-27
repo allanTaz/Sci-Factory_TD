@@ -7017,7 +7017,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackRange: 5
-  damagePerTick: 1
+  damagePerTick: 5
   tickInterval: 0.5
 --- !u!33 &580923119697351616
 MeshFilter:

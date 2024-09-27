@@ -42,7 +42,10 @@ public class ElectricTower : MonoBehaviour
         List<Enemy> affectedEnemies = attackVFX.GetAffectedEnemies();
         foreach (Enemy enemy in affectedEnemies)
         {
-            enemy.TakeDamage(damagePerTick);
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damagePerTick);
+            }
         }
     }
 }

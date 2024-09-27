@@ -20,7 +20,8 @@ public class BeltManager : MonoBehaviour
     }
 
     [SerializeField] private float tickInterval = 0.1f;
-    private List<Belt> registeredBelts = new List<Belt>();
+
+    [SerializeField] private List<Belt> registeredBelts = new List<Belt>();
     private Coroutine tickCoroutine;
 
     private void Awake()

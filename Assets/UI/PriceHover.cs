@@ -59,13 +59,11 @@ public class PriceHover : MonoBehaviour
 
     private void OnPointerEnter(Button button)
     {
-        Debug.Log($"Mouse entered button: {button.name}");
         AnimatePriceUp(button);
     }
 
     private void OnPointerExit(Button button)
     {
-        Debug.Log($"Mouse exited button: {button.name}");
         AnimatePriceDown(button);
     }
 

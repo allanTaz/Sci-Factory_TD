@@ -5,10 +5,8 @@ using System.Collections.Generic;
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private WaveSystem waveSystem;
-
-    private int currentWaveIndex = 0;
-    private int currentEnemyIndex = 0;
-    private int currentEnemyCount = 0;
+    [SerializeField] private float initialWait = 15f;
+    private int currentWaveNumber = 0;
     private int activeEnemies = 0;
 
     public delegate void WaveEventHandler(int waveNumber);
@@ -17,48 +15,43 @@ public class EnemySpawner : MonoBehaviour
 
     public delegate void SpawnEventHandler(Enemy spawnedEnemy);
     public event SpawnEventHandler OnEnemySpawned;
-
-    public void StartWaves()
+    private ChunkExpansionSystem chunkExpansionSystem;
+    private void Awake()
     {
-        StartCoroutine(StartWaveSystem());
+        chunkExpansionSystem = FindAnyObjectByType<ChunkExpansionSystem>();
+        StartCoroutine(StartInfiniteWaveSystem());
+
     }
 
-    private IEnumerator StartWaveSystem()
+    private IEnumerator StartInfiniteWaveSystem()
     {
-        while (currentWaveIndex < waveSystem.waves.Count)
+        yield return new WaitForSeconds(initialWait);
+        while (true) // Infinite loop for endless waves
         {
-            Wave currentWave = waveSystem.waves[currentWaveIndex];
-            OnWaveStart?.Invoke(currentWaveIndex + 1);
+            currentWaveNumber++;
+            Wave currentWave = waveSystem.GenerateWave(currentWaveNumber);
+            OnWaveStart?.Invoke(currentWaveNumber);
             yield return StartCoroutine(SpawnWave(currentWave));
 
             yield return new WaitUntil(() => activeEnemies == 0);
-            OnWaveComplete?.Invoke(currentWaveIndex + 1);
-
+            OnWaveComplete?.Invoke(currentWaveNumber);
+            if (currentWaveNumber == 1)
+                chunkExpansionSystem.TriggerExpansion();
             yield return new WaitForSeconds(currentWave.timeBeforeNextWave);
-            currentWaveIndex++;
         }
-
-        Debug.Log("All waves completed!");
     }
 
     private IEnumerator SpawnWave(Wave wave)
     {
-        Debug.Log($"Starting Wave {currentWaveIndex + 1}");
+        //Debug.Log($"Starting Wave {currentWaveNumber}");
 
-        currentEnemyIndex = 0;
-        while (currentEnemyIndex < wave.enemies.Count)
+        foreach (EnemySpawn enemySpawn in wave.enemies)
         {
-            EnemySpawn enemySpawn = wave.enemies[currentEnemyIndex];
-            currentEnemyCount = 0;
-
-            while (currentEnemyCount < enemySpawn.count)
+            for (int i = 0; i < enemySpawn.count; i++)
             {
                 SpawnEnemy(enemySpawn.enemyData);
-                currentEnemyCount++;
                 yield return new WaitForSeconds(wave.timeBetweenSpawns);
             }
-
-            currentEnemyIndex++;
         }
     }
 
@@ -90,11 +83,6 @@ public class EnemySpawner : MonoBehaviour
 
     public int GetCurrentWave()
     {
-        return currentWaveIndex + 1;
-    }
-
-    public int GetTotalWaves()
-    {
-        return waveSystem.waves.Count;
+        return currentWaveNumber;
     }
 }

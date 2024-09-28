@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 6569380907464381137}
   m_Layer: 0
   m_Name: Drill
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   productionInterval: 5
-  resourcePrefab: {fileID: 1468906494691199255, guid: 1b43bb5915c58ed46af2af280daa0f17, type: 3}
+  animationDuration: 3
 --- !u!114 &8086973560202521200
 MonoBehaviour:
   m_ObjectHideFlags: 0

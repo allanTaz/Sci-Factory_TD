@@ -31742,7 +31742,7 @@ GameObject:
   - component: {fileID: 6446888749085662126}
   m_Layer: 0
   m_Name: ObjectPlacer
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -121,6 +121,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyData: {fileID: 11400000, guid: c6fd47248aa85e7498938fe32d3ce320, type: 2}
   pathfinder: {fileID: 0}
+  floatingTextPrefab: {fileID: 3542069113703185269, guid: 5467e97c79d4ecd4bbfd50582d817878, type: 3}
+  damageTextColor: {r: 1, g: 0, b: 0, a: 1}
   healthBarPrefab: {fileID: 2891993065117455483, guid: 4c2f751a4bef2554595b0014a4916ed8, type: 3}
 --- !u!54 &3955360996015744495
 Rigidbody:

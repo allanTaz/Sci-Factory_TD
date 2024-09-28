@@ -6,6 +6,8 @@ using System.Linq;
 public class Pathfinder : MonoBehaviour
 {
     [SerializeField] private Material pathLineMaterial;
+    public bool isPathBlocked = false;
+    public List<Vector3> currentPath;
     private GridGenerator gridGenerator;
     private BuildingPlacer buildingPlacer;
     private LineRenderer pathLine;
@@ -18,6 +20,7 @@ public class Pathfinder : MonoBehaviour
 
     void Start()
     {
+        currentPath = new List<Vector3>();
         startObject = gameObject;
         gridGenerator = FindAnyObjectByType<GridGenerator>();
         buildingPlacer = FindAnyObjectByType<BuildingPlacer>();
@@ -73,6 +76,7 @@ public class Pathfinder : MonoBehaviour
 
         path = AStar(startPos, endPos);
         DisplayPath();
+        currentPath = GetPath();
     }
 
     private Vector2Int GetGridPosition(GameObject obj)
@@ -94,6 +98,7 @@ public class Pathfinder : MonoBehaviour
 
             if (current == goal)
             {
+                isPathBlocked = false;
                 return ReconstructPath(cameFrom, current);
             }
 
@@ -115,6 +120,7 @@ public class Pathfinder : MonoBehaviour
         }
 
         Debug.LogWarning($"No path found from {start} to {goal}.");
+        isPathBlocked = true;
         return new List<Vector2Int>();
     }
 

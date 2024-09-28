@@ -14,6 +14,9 @@ public class Enemy : MonoBehaviour
     public delegate void EnemyEventHandler(Enemy enemy);
     public event EnemyEventHandler OnDestroyed;
 
+    [SerializeField] private GameObject floatingTextPrefab;
+    [SerializeField] private Color damageTextColor = Color.red;
+
     [SerializeField] private GameObject healthBarPrefab;
     private Image healthBarFillImage;
     private RectTransform healthBarRectTransform;
@@ -88,9 +91,9 @@ public class Enemy : MonoBehaviour
 
     IEnumerator MoveAlongPath()
     {
-        while (currentPathIndex < path.Count)
+        while (currentPathIndex < pathfinder.currentPath.Count)
         {
-            Vector3 targetPosition = path[currentPathIndex];
+            Vector3 targetPosition = pathfinder.currentPath[currentPathIndex];
             while (transform.position != targetPosition)
             {
                 transform.position = Vector3.MoveTowards(transform.position, targetPosition, enemyData.moveSpeed * Time.deltaTime);
@@ -139,6 +142,17 @@ public class Enemy : MonoBehaviour
 
         currentHealth -= damage;
         UpdateHealthBar();
+
+        // Spawn floating text
+        if (floatingTextPrefab != null)
+        {
+            GameObject floatingTextObj = Instantiate(floatingTextPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity, transform);
+            FloatingText floatingText = floatingTextObj.GetComponent<FloatingText>();
+            if (floatingText != null)
+            {
+                floatingText.Init(damage);
+            }
+        }
 
         if (currentHealth <= 0)
         {

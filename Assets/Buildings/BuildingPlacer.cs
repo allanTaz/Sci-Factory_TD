@@ -440,7 +440,7 @@ public class BuildingPlacer : MonoBehaviour
             DestroyBuilding(gridPosition);
         }
     }
-    private void DestroyBuilding(Vector2Int position)
+    public void DestroyBuilding(Vector2Int position, bool refund = true)
     {
         GridCell cell = gridGenerator.GetCell(position);
         if (cell != null && cell.IsOccupied)
@@ -456,9 +456,12 @@ public class BuildingPlacer : MonoBehaviour
             }
             Building buildingData = GetBuildingPropsFromObject(buildingToDestroy);
             if (buildingData != null) {
-                foreach (var currency in buildingData.Price)
+                if (refund)
                 {
-                    CurrencyManager.Instance.AddCurrency(currency.Key, currency.Value);
+                    foreach (var currency in buildingData.Price)
+                    {
+                        CurrencyManager.Instance.AddCurrency(currency.Key, currency.Value);
+                    }
                 }
                 buildingData.instanceCount--;
             }

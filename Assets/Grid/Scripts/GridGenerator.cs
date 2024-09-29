@@ -22,7 +22,7 @@ public class GridGenerator : MonoBehaviour
         MinBounds = Vector2Int.zero;
         MaxBounds = new Vector2Int(9, 9);  // Initial 10x10 grid
         GenerateInitialGrid();
-        PlaceObject(Vector2Int.zero, baseCorePrefab);
+        PlaceObject(new Vector2Int(5,5), baseCorePrefab);
     }
 
     private void GenerateInitialGrid()

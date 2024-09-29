@@ -26,7 +26,7 @@ public class Pathfinder : MonoBehaviour
         buildingPlacer = FindAnyObjectByType<BuildingPlacer>();
         buildingPlacer.OnBuildingPlaced += FindPath;
         buildingPlacer.OnBuildingDestroyed += FindPath;
-        pathLine = gameObject.AddComponent<LineRenderer>();
+        pathLine = gameObject.GetComponent<LineRenderer>();
         pathLine.startWidth = 0.1f;
         pathLine.endWidth = 0.1f;
         pathLine.material = pathLineMaterial;
@@ -67,7 +67,6 @@ public class Pathfinder : MonoBehaviour
     {
         if (startObject == null || endObject == null)
         {
-            Debug.LogError("Start or end object is null. Cannot find path.");
             return;
         }
 
@@ -180,19 +179,22 @@ public class Pathfinder : MonoBehaviour
 
     private void DisplayPath()
     {
-        if (path.Count == 0)
+        if (pathLine != null)
         {
-            Debug.LogWarning("No path found to display!");
-            pathLine.positionCount = 0;
-            return;
-        }
+            if (path.Count == 0)
+            {
+                Debug.LogWarning("No path found to display!");
+                pathLine.positionCount = 0;
+                return;
+            }
 
-        //Debug.Log($"Displaying path with {path.Count} points");
-        pathLine.positionCount = path.Count;
-        for (int i = 0; i < path.Count; i++)
-        {
-            Vector3 worldPos = new Vector3(path[i].x, 0.5f, path[i].y) + gridOffset;
-            pathLine.SetPosition(i, worldPos);
+            //Debug.Log($"Displaying path with {path.Count} points");
+            pathLine.positionCount = path.Count;
+            for (int i = 0; i < path.Count; i++)
+            {
+                Vector3 worldPos = new Vector3(path[i].x, 0.5f, path[i].y) + gridOffset;
+                pathLine.SetPosition(i, worldPos);
+            }
         }
     }
 }

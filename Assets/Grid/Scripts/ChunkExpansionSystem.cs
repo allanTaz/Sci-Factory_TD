@@ -11,11 +11,14 @@ public class ChunkExpansionSystem : MonoBehaviour
     private HashSet<Vector2Int> existingChunkPositions = new HashSet<Vector2Int>();
     private int chunkSize;
     private int chunkCount = 0;
+    private GameObject core;
 
     private void Start()
     {
         chunkGenerator = new WFCChunkGenerator();
         chunkSize = WFCChunkGenerator.GetChunkSize();
+
+        // Find the Core object and store its position
 
         // Initialize with the first chunk
         AddChunk(Vector2Int.zero, true);
@@ -35,6 +38,7 @@ public class ChunkExpansionSystem : MonoBehaviour
             TriggerExpansion();
         }
     }
+
     private OreType GetOreTypeForChunk(int chunkNumber)
     {
         switch (chunkNumber % 3)
@@ -49,6 +53,7 @@ public class ChunkExpansionSystem : MonoBehaviour
                 return OreType.Blue; // Fallback, shouldn't occur
         }
     }
+
     private Vector2Int GetRandomAdjacentChunkPosition()
     {
         List<Vector2Int> possiblePositions = new List<Vector2Int>();
@@ -74,6 +79,15 @@ public class ChunkExpansionSystem : MonoBehaviour
         return Vector2Int.one * -1; // No valid positions
     }
 
+    private bool IsPositionFarEnoughFromCore(Vector2Int position)
+    {
+        if (core== null)
+            core = GameObject.FindGameObjectWithTag("Core");
+        var corePosition = GridUtility.WorldToGridPosition(core.transform.position, gridGenerator.transform);
+        float distance = Vector2Int.Distance(position * chunkSize, corePosition);
+        return distance >= 12f;
+    }
+
     private void AddChunk(Vector2Int chunkPosition, bool isInitialChunk)
     {
         WFCChunkGenerator.CellType[,] chunkData = chunkGenerator.GenerateChunk(isInitialChunk);
@@ -96,7 +110,10 @@ public class ChunkExpansionSystem : MonoBehaviour
                         gridGenerator.SetCellAsOre(globalGridPosition, GetOreTypeForChunk(chunkCount));
                         break;
                     case WFCChunkGenerator.CellType.EnemySpawner:
-                        gridGenerator.PlaceObject(globalGridPosition, enemySpawnerPrefab);
+                        if (IsPositionFarEnoughFromCore(globalGridPosition))
+                        {
+                            gridGenerator.PlaceObject(globalGridPosition, enemySpawnerPrefab);
+                        }
                         break;
                 }
             }

@@ -172,6 +172,8 @@ public class Enemy : MonoBehaviour
     }
     void OnDestroy()
     {
+        if(gameObject!=null)
+            Destroy(gameObject);
         if(healthBarRectTransform!=null)
             Destroy(healthBarRectTransform.gameObject);
         OnDestroyed?.Invoke(this);

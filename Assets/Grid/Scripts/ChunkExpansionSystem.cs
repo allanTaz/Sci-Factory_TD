@@ -10,17 +10,14 @@ public class ChunkExpansionSystem : MonoBehaviour
     private WFCChunkGenerator chunkGenerator;
     private HashSet<Vector2Int> existingChunkPositions = new HashSet<Vector2Int>();
     private int chunkSize;
-    private int chunkCount = 0;
+    public int chunkCount { get; private set; }
     private GameObject core;
 
     private void Start()
     {
         chunkGenerator = new WFCChunkGenerator();
         chunkSize = WFCChunkGenerator.GetChunkSize();
-
-        // Find the Core object and store its position
-
-        // Initialize with the first chunk
+        
         AddChunk(Vector2Int.zero, true);
         TriggerExpansion();
     }
@@ -34,7 +31,7 @@ public class ChunkExpansionSystem : MonoBehaviour
         }
         else
         {
-            //Debug.LogWarning("No valid positions for new chunks!");
+
             TriggerExpansion();
         }
     }

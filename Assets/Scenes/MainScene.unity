@@ -1989,7 +1989,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8232483639308626270, guid: 6241adfa3eea9124c807cb2d914ce044, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0.3
+      value: 0.46
       objectReference: {fileID: 0}
     - target: {fileID: 8232483639308626270, guid: 6241adfa3eea9124c807cb2d914ce044, type: 3}
       propertyPath: m_SizeDelta.y
@@ -5021,6 +5021,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemySpawners: []
+  integerSlider: 1
   pathLineMaterial: {fileID: 2100000, guid: bf50d306e54d3da4ab63ef7d69a58d89, type: 2}
 --- !u!4 &1350132128
 Transform:
@@ -5150,7 +5151,7 @@ MonoBehaviour:
   baseCorePrefab: {fileID: 1526039266091944743, guid: c5ea1cab6ac9e1240a76b15bd981fde7, type: 3}
   enemySpawnerPrefab: {fileID: 2364471944211697976, guid: e7920d8114503c24d9c7546c2222ca5e, type: 3}
   oreData: {fileID: 11400000, guid: 1954999daca8e3f40a3a728241df40ff, type: 2}
-  cellAnimationDuration: 0.5
+  cellAnimationDuration: 1
   cellAnimationEase: 27
 --- !u!4 &1468556122
 Transform:
@@ -8568,7 +8569,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.3, y: 0.1}
+  m_SizeDelta: {x: 0.46, y: 0.1}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &1100530008731248604
 RectTransform:
@@ -9383,7 +9384,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.3, y: 0.1}
+  m_SizeDelta: {x: 0.46, y: 0.1}
   m_Pivot: {x: 0, y: 1}
 --- !u!224 &4772175035836746313 stripped
 RectTransform:

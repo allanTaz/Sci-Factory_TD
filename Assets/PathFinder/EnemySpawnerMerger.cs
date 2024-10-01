@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 public class EnemySpawnerMerger : MonoBehaviour
 {
     public List<GameObject> enemySpawners = new List<GameObject>();
+    public List<GameObject> eligibleSpawners = new List<GameObject>();
     private BuildingPlacer buildingPlacer;
     [Range(1, 10)]
     public int integerSlider = 1;
@@ -41,7 +42,7 @@ public class EnemySpawnerMerger : MonoBehaviour
         {
             yield return new WaitForSeconds(mergeInterval);
 
-            List<GameObject> eligibleSpawners = enemySpawners.Where(s => GetCurrentWave(s) > 1).ToList();
+            eligibleSpawners = enemySpawners.Where(s => GetCurrentWave(s) > 1).ToList();
             if (eligibleSpawners.Count > 2)
             {
                 MergeSpawners(eligibleSpawners);
@@ -64,18 +65,22 @@ public class EnemySpawnerMerger : MonoBehaviour
             GameObject spawner1 = availableSpawners[Random.Range(0, availableSpawners.Count)];
             availableSpawners.Remove(spawner1);
 
-            GameObject spawner2 = GetClosestSpawner(spawner1, availableSpawners);
-            availableSpawners.Remove(spawner2);
+            GameObject spawner2 = GetClosestSpawnerWithPath(spawner1, availableSpawners);
 
-            mergingPairs[spawner1] = spawner2;
-            StartCoroutine(MoveAndMergeSpawners(spawner1, spawner2));
+            if (spawner2 != null)
+            {
+                availableSpawners.Remove(spawner2);
+                mergingPairs[spawner1] = spawner2;
+                StartCoroutine(MoveAndMergeSpawners(spawner1, spawner2));
+            }
+            else
+            {
+                // If no valid path is found, put spawner1 back in the list
+                availableSpawners.Add(spawner1);
+            }
         }
     }
 
-    GameObject GetClosestSpawner(GameObject source, List<GameObject> spawners)
-    {
-        return spawners.OrderBy(s => Vector3.Distance(source.transform.position, s.transform.position)).First();
-    }
 
     IEnumerator MoveAndMergeSpawners(GameObject spawner1, GameObject spawner2)
     {
@@ -248,7 +253,23 @@ public class EnemySpawnerMerger : MonoBehaviour
         // Favor paths further from the Core, but within reasonable bounds
         return distanceToGoal - Mathf.Clamp(distanceToCore - MIN_CORE_DISTANCE, 0, 5);
     }
+    GameObject GetClosestSpawnerWithPath(GameObject source, List<GameObject> spawners)
+    {
+        Vector2Int sourcePos = GetGridPosition(source);
 
+        foreach (var spawner in spawners.OrderBy(s => Vector3.Distance(source.transform.position, s.transform.position)))
+        {
+            Vector2Int targetPos = GetGridPosition(spawner);
+            List<Vector2Int> path = AStar(sourcePos, targetPos);
+
+            if (path.Count > 0)
+            {
+                return spawner;
+            }
+        }
+
+        return null;
+    }
     List<Vector2Int> GetNeighbors(Vector2Int pos)
     {
         var neighbors = new List<Vector2Int>

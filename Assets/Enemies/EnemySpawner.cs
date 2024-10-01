@@ -7,6 +7,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private WaveSystem waveSystem;
     [SerializeField] private float initialWait = 15f;
     [SerializeField] private float healthScalingFactor = 2f; // New: Factor to scale health based on spawner size
+    private GridGenerator gridGenerator;
     private List<Enemy> enemies;
     private int currentWaveNumber = 0;
     private int activeEnemies = 0;
@@ -30,6 +31,7 @@ public class EnemySpawner : MonoBehaviour
     private void Awake()
     {
         enemies = new List<Enemy>();
+        gridGenerator = FindAnyObjectByType<GridGenerator>();
         chunkExpansionSystem = FindAnyObjectByType<ChunkExpansionSystem>();
         StartCoroutine(StartInfiniteWaveSystem());
     }
@@ -46,8 +48,12 @@ public class EnemySpawner : MonoBehaviour
 
             yield return new WaitUntil(() => activeEnemies == 0);
             OnWaveComplete?.Invoke(currentWaveNumber);
-            if (currentWaveNumber == 1 && gameObject.transform.localScale.y == 0.5f)
+            if (currentWaveNumber == 1 && gameObject.transform.localScale.y == 0.5f && chunkExpansionSystem.chunkCount<10)
                 chunkExpansionSystem.TriggerExpansion();
+            if(currentWaveNumber == 1 && gameObject.transform.localScale.y == 0.5 && chunkExpansionSystem.chunkCount == 10)
+            {
+                gridGenerator.PlaceEnemySpawner();
+            }
             yield return new WaitForSeconds(currentWave.timeBeforeNextWave);
         }
     }

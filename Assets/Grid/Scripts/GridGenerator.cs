@@ -9,7 +9,7 @@ public class GridGenerator : MonoBehaviour
     [SerializeField] private GameObject baseCorePrefab;
     [SerializeField] private GameObject enemySpawnerPrefab;
     [SerializeField] public OreData oreData;
-    [SerializeField] private float cellAnimationDuration = 0.5f;
+    [SerializeField] private float cellAnimationDuration = 1f;
     [SerializeField] private Ease cellAnimationEase = Ease.OutBack;
     private Material defaultCellMaterial;
     private GameObject enemySpawner;
@@ -24,7 +24,28 @@ public class GridGenerator : MonoBehaviour
         GenerateInitialGrid();
         PlaceObject(new Vector2Int(5,5), baseCorePrefab);
     }
-
+    public void PlaceEnemySpawner()
+    {
+        Vector2Int corePosition = new Vector2Int(5, 5); // Assuming core is at (5,5)
+        List<Vector2Int> validPositions = new List<Vector2Int>();
+        foreach (GridCell cell in grid.Values) 
+        {
+            if (Vector2Int.Distance(cell.Position,corePosition)>=12 && !cell.IsOccupied)
+            {
+                validPositions.Add(cell.Position);
+            }
+        }
+        Vector2Int spawnerPosition = validPositions[Random.Range(0, validPositions.Count)];
+        GameObject spawner = PlaceObject(spawnerPosition, enemySpawnerPrefab);
+        if (spawner != null)
+        {
+            Debug.Log($"Enemy spawner created at position: {spawnerPosition}");
+        }
+        else
+        {
+            Debug.LogError("Failed to create enemy spawner");
+        }
+    }
     private void GenerateInitialGrid()
     {
         for (int x = MinBounds.x; x <= MaxBounds.x; x++)
@@ -58,11 +79,7 @@ public class GridGenerator : MonoBehaviour
             }
 
             // Animate the cell scaling
-            cellVisual.transform.DOScale(Vector3.one, cellAnimationDuration)
-                .SetEase(cellAnimationEase)
-                .OnComplete(() => {
-                    // You can add any post-animation logic here if needed
-                });
+            cellVisual.transform.DOScale(Vector3.one, cellAnimationDuration).SetEase(cellAnimationEase);
         }
     }
 
@@ -71,10 +88,6 @@ public class GridGenerator : MonoBehaviour
         MinBounds = Vector2Int.Min(MinBounds, position);
         MaxBounds = Vector2Int.Max(MaxBounds, position);
         CreateCell(position);
-    }
-    private enum OreVisuals
-    {
-        
     }
     public void SetCellAsOre(Vector2Int position, OreType oreType)
     {
@@ -199,30 +212,6 @@ public class GridGenerator : MonoBehaviour
         // If no renderers found, return a default height
         Debug.LogWarning("No renderer found on object or its children. Using default height.");
         return 1f; // Default height
-    }
-
-    public void RemoveObject(Vector2Int position)
-    {
-        GridCell cell = GetCell(position);
-        if (cell != null && cell.IsOccupied)
-        {
-            GameObject objToRemove = cell.PlacedObject;
-            cell.RemoveObject();
-            if (objToRemove != null)
-            {
-                Destroy(objToRemove);
-            }
-        }
-    }
-
-    public Vector3 GetEnemySpawnPosition()
-    {
-        return GetWorldPosition(MaxBounds);
-    }
-
-    public Vector3 GetBaseCorePosition()
-    {
-        return GetWorldPosition(Vector2Int.zero);
     }
 
     public Material GetDefaultCellMaterial()

@@ -7,15 +7,13 @@ using Unity.VisualScripting;
 
 public class EnemySpawnerMerger : MonoBehaviour
 {
-    public List<GameObject> enemySpawners = new List<GameObject>();
-    public List<GameObject> eligibleSpawners = new List<GameObject>();
-    private BuildingPlacer buildingPlacer;
-    [Range(1, 10)]
-    public int integerSlider = 1;
     [SerializeField] private Material pathLineMaterial;
+
     private Dictionary<GameObject, LineRenderer> spawnerPaths = new Dictionary<GameObject, LineRenderer>();
     private Dictionary<GameObject, GameObject> mergingPairs = new Dictionary<GameObject, GameObject>();
-
+    private List<GameObject> enemySpawners = new List<GameObject>();
+    private List<GameObject> eligibleSpawners = new List<GameObject>();
+    private BuildingPlacer buildingPlacer;
     private const float MIN_CORE_DISTANCE = 8f;
     private GridGenerator gridGenerator;
     private float mergeInterval = 2f;
@@ -32,7 +30,6 @@ public class EnemySpawnerMerger : MonoBehaviour
 
     void Update()
     {
-        Time.timeScale = integerSlider;
         enemySpawners = new List<GameObject>(GameObject.FindGameObjectsWithTag("EnemySpawn"));
     }
 
